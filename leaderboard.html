@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 PGA Championship Pool — Leaderboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --pga-blue: #00205B;
+  --pga-dark: #001A4D;
+  --pga-deeper: #000D2B;
+  --pga-darkest: #000714;
+  --gold: #D4A843;
+  --gold-light: #E8D48B;
+  --gold-pale: #F5E6B8;
+  --cream: #FDF8EC;
+  --cream-dark: #F5EDD6;
+  --text: #1A1F2E;
+  --text-light: #4A5A6A;
+  --white: #FFFFFF;
+  --red: #C0392B;
+  --red-light: #E74C3C;
+  --shadow: 0 2px 12px rgba(0,13,43,0.12);
+  --shadow-lg: 0 8px 32px rgba(0,13,43,0.18);
+  --shadow-xl: 0 16px 48px rgba(0,13,43,0.25);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--pga-darkest);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ========== STICKY TOP ========== */
+.sticky-top {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+/* ========== HEADER ========== */
+.header {
+  background: linear-gradient(170deg, var(--pga-darkest) 0%, var(--pga-deeper) 40%, var(--pga-dark) 100%);
+  padding: 1.25rem 2rem 1rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 3px solid var(--gold);
+}
+.header::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(200,169,81,0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 50%, rgba(200,169,81,0.06) 0%, transparent 50%),
+    repeating-linear-gradient(45deg, transparent, transparent 60px, rgba(255,255,255,0.008) 60px, rgba(255,255,255,0.008) 120px);
+}
+.header-content {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.4rem;
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: 0.06em;
+  line-height: 1.1;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+}
+.header .subtitle {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.5);
+  margin-top: 0.3rem;
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.header .event-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(200,169,81,0.25);
+  border-radius: 20px;
+  padding: 0.3rem 1.2rem;
+  font-size: 0.72rem;
+  color: var(--gold-light);
+  letter-spacing: 0.08em;
+}
+.header-nav {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+.nav-link {
+  color: var(--gold-light);
+  font-size: 0.78rem;
+  text-decoration: none;
+  border: 1px solid rgba(200,169,81,0.3);
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.nav-link:hover { background: rgba(200,169,81,0.15); }
+.nav-link.active { background: rgba(200,169,81,0.2); border-color: var(--gold); }
+
+/* ========== STATUS BAR ========== */
+.status-bar {
+  background: linear-gradient(90deg, var(--pga-deeper), var(--pga-dark), var(--pga-deeper));
+  padding: 0.6rem 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  border-bottom: 1px solid rgba(200,169,81,0.15);
+}
+.status-item {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.6);
+  letter-spacing: 0.04em;
+}
+.status-item strong {
+  color: var(--gold-light);
+  font-weight: 600;
+}
+.status-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #4ADE80;
+  font-weight: 600;
+}
+.status-live .pulse {
+  width: 6px; height: 6px;
+  background: #4ADE80;
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(74,222,128,0.4); }
+  50% { opacity: 0.7; box-shadow: 0 0 0 6px rgba(74,222,128,0); }
+}
+
+/* ========== TV MODE BAR ========== */
+.tv-bar {
+  background: rgba(0,0,0,0.3);
+  padding: 0.4rem 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  border-bottom: 1px solid rgba(200,169,81,0.08);
+}
+.tv-btn {
+  background: none;
+  border: 1px solid rgba(200,169,81,0.3);
+  color: var(--gold-light);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.7rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.tv-btn:hover, .tv-btn.active { background: rgba(200,169,81,0.2); border-color: var(--gold); }
+.tv-btn .icon { margin-right: 0.3rem; }
+
+/* ========== POOL STATS BAR ========== */
+.stats-bar {
+  max-width: 1100px;
+  margin: 1rem auto 0;
+  padding: 0 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.75rem;
+}
+.stat-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(200,169,81,0.12);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  text-align: center;
+}
+.stat-label {
+  font-size: 0.6rem;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.25rem;
+}
+.stat-value {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--gold);
+}
+.stat-detail {
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.35);
+  margin-top: 0.15rem;
+}
+
+/* ========== PRE-TOURNAMENT MESSAGE ========== */
+.pre-tournament {
+  max-width: 600px;
+  margin: 3rem auto;
+  background: var(--white);
+  border-radius: 16px;
+  border: 2px solid var(--gold);
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
+  text-align: center;
+}
+.pre-tournament .pt-header {
+  background: linear-gradient(135deg, var(--pga-deeper), var(--pga-blue));
+  padding: 2rem;
+}
+.pre-tournament h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  color: var(--gold);
+}
+.pre-tournament .pt-body { padding: 2rem; }
+.pre-tournament .countdown {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  color: var(--pga-dark);
+  margin-bottom: 1rem;
+}
+.pre-tournament .entries-list {
+  list-style: none;
+  padding: 0;
+}
+.pre-tournament .entries-list li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #E0E8D8;
+  font-size: 0.9rem;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+.pre-tournament .entries-list li:last-child { border-bottom: none; }
+.entry-check {
+  width: 18px; height: 18px;
+  background: var(--pga-blue);
+  border-radius: 50%;
+  color: white;
+  font-size: 0.65rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ========== CHAMPION BANNER ========== */
+.champion-banner {
+  display: none;
+  background: linear-gradient(135deg, var(--pga-darkest) 0%, var(--pga-deeper) 30%, var(--pga-dark) 60%, var(--pga-deeper) 100%);
+  border: 2px solid var(--gold);
+  border-radius: 16px;
+  margin: 1.5rem auto;
+  max-width: 1100px;
+  padding: 2.5rem 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-xl), 0 0 60px rgba(200,169,81,0.15);
+}
+.champion-banner.visible { display: block; }
+.champion-banner::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(200,169,81,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 100%, rgba(200,169,81,0.08) 0%, transparent 60%);
+}
+.champion-content { position: relative; z-index: 1; }
+.champion-jacket { font-size: 3rem; margin-bottom: 0.5rem; }
+.champion-label {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.85rem;
+  color: var(--gold);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+}
+.champion-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: var(--gold);
+  text-shadow: 0 2px 12px rgba(200,169,81,0.4);
+  margin-bottom: 0.25rem;
+}
+.champion-score {
+  font-size: 1.1rem;
+  color: rgba(255,255,255,0.8);
+  margin-bottom: 1rem;
+}
+.champion-subtitle {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.1em;
+}
+
+/* ========== LEADERBOARD ========== */
+.leaderboard-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.leaderboard-card {
+  background: var(--white);
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+  border: 1px solid rgba(0,100,71,0.08);
+  transition: all 0.3s ease;
+}
+.leaderboard-card:hover {
+  box-shadow: var(--shadow-xl);
+  transform: translateY(-1px);
+}
+.leaderboard-card.rank-1 {
+  border: 2px solid var(--gold);
+  box-shadow: var(--shadow-xl), 0 0 30px rgba(200,169,81,0.12);
+}
+.leaderboard-card.rank-2 { border-color: #A0A0A0; }
+.leaderboard-card.rank-3 { border-color: #CD7F32; }
+
+/* Card header row */
+.card-header {
+  display: flex;
+  align-items: center;
+  padding: 0.85rem 1.25rem;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.card-header:hover { background: #FAFDF7; }
+
+.rank-badge {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  font-size: 1.05rem;
+  flex-shrink: 0;
+}
+.rank-1 .rank-badge {
+  background: linear-gradient(135deg, var(--gold), #A68B3A);
+  color: var(--pga-deeper);
+  box-shadow: 0 2px 8px rgba(200,169,81,0.4);
+}
+.rank-2 .rank-badge { background: linear-gradient(135deg, #C0C0C0, #8A8A8A); color: var(--white); }
+.rank-3 .rank-badge { background: linear-gradient(135deg, #CD7F32, #A0622A); color: var(--white); }
+.rank-badge.default { background: var(--cream-dark); color: var(--text-light); }
+
+.card-name-area { flex: 1; }
+.card-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--pga-dark);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.movement-arrow {
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+.movement-arrow.up { color: #22C55E; }
+.movement-arrow.down { color: var(--red); }
+.movement-arrow.same { color: #999; font-size: 0.5rem; }
+
+.card-subtitle {
+  font-size: 0.68rem;
+  color: var(--text-light);
+  margin-top: 0.1rem;
+}
+
+.card-score { text-align: right; }
+.card-score .total {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--pga-dark);
+  line-height: 1;
+}
+.card-score .label {
+  font-size: 0.62rem;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.expand-icon {
+  color: var(--text-light);
+  font-size: 0.8rem;
+  transition: transform 0.3s;
+  flex-shrink: 0;
+}
+.leaderboard-card.expanded .expand-icon { transform: rotate(180deg); }
+
+/* Card body — golfer details */
+.card-body {
+  display: none;
+  border-top: 1px solid #E8EDE4;
+}
+.leaderboard-card.expanded .card-body { display: block; }
+
+.golfer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.golfer-row {
+  display: flex;
+  align-items: center;
+  padding: 0.4rem 1rem;
+  gap: 0.4rem;
+  border-bottom: 1px solid #F0F4EC;
+  font-size: 0.78rem;
+  transition: background 0.15s;
+}
+.golfer-row:hover { background: #FAFDF7; }
+.golfer-row.counting { background: #F0F8EC; font-weight: 600; }
+.golfer-row.not-counting { opacity: 0.45; }
+/* Right column rows get a left border for visual separation */
+.golfer-row:nth-child(even) { border-left: 1px solid #F0F4EC; }
+
+.golfer-tier-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.golfer-tier-dot.t1 { background: var(--gold); }
+.golfer-tier-dot.t2 { background: #7FB069; }
+.golfer-tier-dot.t3 { background: #5B9BD5; }
+.golfer-tier-dot.t4 { background: #D4915E; }
+.golfer-tier-dot.t5 { background: #9B8EC0; }
+
+.golfer-name {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.golfer-position {
+  font-weight: 700;
+  color: var(--pga-dark);
+  min-width: 30px;
+  text-align: center;
+  font-size: 0.75rem;
+}
+.golfer-score-detail {
+  font-size: 0.68rem;
+  color: var(--text-light);
+  min-width: 60px;
+  text-align: right;
+  white-space: nowrap;
+}
+.golfer-pts {
+  font-weight: 700;
+  min-width: 35px;
+  text-align: right;
+  font-size: 0.75rem;
+}
+.golfer-pts.counting-pts { color: var(--pga-blue); }
+.golfer-pts.not-counting-pts { color: #B0B0B0; }
+.golfer-mc { color: var(--red); }
+.golfer-wd { color: #999; }
+
+/* Tiebreaker footer */
+.card-tiebreakers {
+  background: var(--cream);
+  padding: 0.5rem 1.25rem;
+  font-size: 0.72rem;
+  color: var(--text-light);
+  border-top: 1px solid #E0E8D8;
+}
+
+/* ========== SCORING KEY ========== */
+.scoring-key {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(200,169,81,0.12);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  margin-top: 1rem;
+}
+.scoring-key h4 {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.85rem;
+  color: var(--gold);
+  margin-bottom: 0.5rem;
+}
+.scoring-key-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.5);
+}
+.scoring-key-grid span { white-space: nowrap; }
+.scoring-key-grid strong { color: var(--gold-light); }
+
+/* ========== FOOTER ========== */
+.footer {
+  text-align: center;
+  padding: 2rem 1rem;
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.25);
+  letter-spacing: 0.06em;
+}
+
+/* ========== LOADING ========== */
+.loading-state {
+  text-align: center;
+  padding: 3rem;
+  color: rgba(255,255,255,0.5);
+}
+.loading-state .spinner {
+  width: 40px; height: 40px;
+  border: 3px solid rgba(200,169,81,0.2);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 1rem;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ========== CONFETTI ========== */
+.confetti-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* ========== AUTO-SCROLL INDICATOR ========== */
+.auto-scroll-indicator {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background: rgba(200,169,81,0.9);
+  color: var(--pga-deeper);
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.3rem 0.6rem;
+  border-radius: 8px;
+  z-index: 50;
+  display: none;
+  letter-spacing: 0.06em;
+}
+.auto-scroll-indicator.visible { display: block; }
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+  .header h1 { font-size: 1.6rem; }
+  .leaderboard-container { padding: 0.75rem; }
+  .status-bar { gap: 0.75rem; padding: 0.5rem 1rem; }
+  .champion-name { font-size: 1.6rem; }
+  .stats-bar { grid-template-columns: repeat(2, 1fr); padding: 0 0.75rem; }
+  .golfer-score-detail { display: none; }
+  .golfer-grid { grid-template-columns: 1fr; }
+  .golfer-row:nth-child(even) { border-left: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- Sticky Header Block -->
+<div class="sticky-top">
+  <!-- Header -->
+  <div class="header">
+    <div class="header-content">
+      <h1>The PGA Championship Pool</h1>
+      <div class="subtitle">Leaderboard</div>
+      <div class="event-badge">
+        <span>Aronimink Golf Club</span>
+        <span>&bull;</span>
+        <span>May 14 – 17, 2026</span>
+      </div>
+      <div class="header-nav">
+        <a href="index.html" class="nav-link">&larr; Make Picks</a>
+        <button class="nav-link" onclick="refresh()" style="background:none; cursor:pointer;">Refresh Scores</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Status Bar -->
+  <div class="status-bar" id="statusBar">
+    <div class="status-item" id="statusTournament">Loading tournament data...</div>
+    <div class="status-item" id="statusRefresh"></div>
+    <div class="status-item" id="statusEntries"></div>
+  </div>
+
+  <!-- TV Mode Controls -->
+  <div class="tv-bar">
+    <button class="tv-btn" onclick="toggleAutoScroll()" id="btnAutoScroll"><span class="icon">&#9654;</span> TV Auto-Scroll</button>
+    <button class="tv-btn" onclick="expandAll()"><span class="icon">&#9776;</span> Expand All</button>
+    <button class="tv-btn" onclick="collapseAll()"><span class="icon">&#8212;</span> Collapse All</button>
+  </div>
+</div>
+
+<div class="auto-scroll-indicator" id="scrollIndicator">AUTO-SCROLL ON</div>
+
+<!-- Champion Banner -->
+<div class="champion-banner" id="championBanner">
+  <div class="champion-content">
+    <div class="champion-jacket">&#127941;</div>
+    <div class="champion-label">2026 PGA Championship Pool Champion</div>
+    <div class="champion-name" id="championName"></div>
+    <div class="champion-score" id="championScore"></div>
+    <div class="champion-subtitle">Congratulations on earning the Green Jacket!</div>
+  </div>
+</div>
+
+<!-- Pool Stats -->
+<div class="stats-bar" id="statsBar" style="display:none;"></div>
+
+<!-- Pre-tournament waiting screen -->
+<div id="preTournament" style="display:none;">
+  <div class="pre-tournament">
+    <div class="pt-header">
+      <h2>The Tournament Hasn't Started Yet</h2>
+    </div>
+    <div class="pt-body">
+      <div class="countdown" id="countdown"></div>
+      <p style="color: var(--text-light); font-size: 0.85rem; margin-bottom: 1rem;">Picks are locked and hidden until tee-off. Here's who's entered:</p>
+      <ul class="entries-list" id="entriesList"></ul>
+    </div>
+  </div>
+</div>
+
+<!-- Leaderboard -->
+<div class="leaderboard-container" id="leaderboardContainer" style="display:none;">
+  <div id="leaderboardCards"></div>
+
+  <div class="scoring-key">
+    <h4>Scoring Reference</h4>
+    <div class="scoring-key-grid">
+      <span>Win: <strong>1</strong></span>
+      <span>2nd: <strong>2</strong></span>
+      <span>3rd: <strong>3</strong></span>
+      <span>T3-5: <strong>4</strong></span>
+      <span>T6-10: <strong>8</strong></span>
+      <span>T11-20: <strong>15</strong></span>
+      <span>T21-30: <strong>22</strong></span>
+      <span>T31-40: <strong>30</strong></span>
+      <span>T41-50: <strong>38</strong></span>
+      <span>50+: <strong>45</strong></span>
+      <span>MC: <strong>50</strong></span>
+      <span>WD: <strong>55</strong></span>
+    </div>
+    <p style="margin-top: 0.5rem; font-size: 0.68rem; color: rgba(255,255,255,0.35);">Best 4 of 8 picks count toward your total. Lower is better.</p>
+  </div>
+</div>
+
+<div class="footer">
+  2026 PGA Championship Pool &bull; For Bragging Rights (and Maybe Lunch) &bull; naturalForms
+</div>
+
+<canvas class="confetti-canvas" id="confettiCanvas"></canvas>
+
+<script>
+// ============================================================
+// CONFIGURATION
+// ============================================================
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyrBv9vlyH9xVkevZSB9GVHRBm7gtCOApIfG5PymHSdShB9KbMLTcLJ-Yd2miA7-Edt/exec';
+const DEADLINE = new Date('2026-05-15T04:00:00Z'); // Midnight ET May 14
+const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
+const ESPN_GOLF_URL = 'https://site.api.espn.com/apis/site/v2/sports/golf/leaderboard';
+
+// Position scoring
+function getPointsForPosition(pos) {
+  if (pos <= 0) return 55;
+  if (pos === 1) return 1;
+  if (pos === 2) return 2;
+  if (pos === 3) return 3;
+  if (pos <= 5) return 4;
+  if (pos <= 10) return 8;
+  if (pos <= 20) return 15;
+  if (pos <= 30) return 22;
+  if (pos <= 40) return 30;
+  if (pos <= 50) return 38;
+  return 45;
+}
+const MC_POINTS = 50;
+const WD_POINTS = 55;
+
+// ============================================================
+// State
+// ============================================================
+let poolEntries = [];
+let tournamentData = null;
+let previousStandings = null;
+let isTournamentComplete = false;
+let refreshTimer = null;
+let autoScrollActive = false;
+let autoScrollTimer = null;
+
+// ============================================================
+// Normalize names for matching
+// ============================================================
+function normalizeName(name) {
+  return name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z\s]/g, '').trim();
+}
+
+// ============================================================
+// Fetch pool entries from Google Sheets
+// ============================================================
+async function fetchPoolEntries() {
+  try {
+    const resp = await fetch(`${APPS_SCRIPT_URL}?action=getPicks`);
+    return await resp.json();
+  } catch (err) {
+    console.error('Failed to fetch pool entries:', err);
+    return null;
+  }
+}
+
+// ============================================================
+// Fetch ESPN tournament data
+// ============================================================
+async function fetchESPNData() {
+  try {
+    const resp = await fetch(ESPN_GOLF_URL);
+    const data = await resp.json();
+
+    const events = data.events || [];
+    let pgaEvent = null;
+
+    for (const event of events) {
+      const name = (event.name || '').toLowerCase();
+      if (name.includes('pga champ') || name.includes('aronimink') || name.includes('pga')) {
+        pgaEvent = event;
+        break;
+      }
+    }
+    if (!pgaEvent && events.length > 0) pgaEvent = events[0];
+    if (!pgaEvent) return null;
+
+    const competition = pgaEvent.competitions?.[0];
+    if (!competition) return null;
+
+    const competitors = competition.competitors || [];
+    const scores = {};
+
+    for (const comp of competitors) {
+      const athlete = comp.athlete || {};
+      const displayName = athlete.displayName || '';
+      const status = comp.status || {};
+
+      let posNum = 999;
+      let posDisplay = '--';
+      let playerStatus = 'active';
+      let scoreToPar = '--';
+      let today = '--';
+      let thru = '--';
+
+      if (status.position) {
+        posDisplay = status.position.displayName || status.displayValue || '--';
+        posNum = parseInt(status.position.id) || 999;
+      }
+
+      const statusType = status.type?.name || '';
+      if (statusType === 'STATUS_CUT' || comp.status?.period === 99) {
+        playerStatus = 'MC';
+        posDisplay = 'MC';
+      }
+      if (statusType === 'STATUS_WITHDRAWN' || statusType === 'STATUS_DISQUALIFIED') {
+        playerStatus = 'WD';
+        posDisplay = 'WD';
+      }
+
+      // Total score to par — score.displayValue can lag mid-round, so prefer linescores
+      if (comp.score) scoreToPar = comp.score.displayValue || '--';
+
+      const linescores = comp.linescores || [];
+      const currentPeriod = status.period || 1;
+      const currentRoundScore = linescores.find(ls => ls.period === currentPeriod && ls.displayValue);
+
+      // Fix total: in round 1, linescore IS the tournament total (more reliable mid-round)
+      if (currentRoundScore && currentPeriod === 1) {
+        scoreToPar = currentRoundScore.displayValue;
+      }
+
+      // Today: show stroke total (67, 72) when round finished, relative-to-par (-3, E) when in progress
+      if (currentRoundScore) {
+        if (status.thru === 18) {
+          today = currentRoundScore.value ? String(currentRoundScore.value) : currentRoundScore.displayValue;
+        } else if (status.thru > 0) {
+          today = currentRoundScore.displayValue;
+        }
+      }
+
+      if (status.thru !== undefined && status.thru !== null) {
+        thru = status.thru === 18 ? 'F' : status.thru.toString();
+      }
+
+      scores[displayName] = { position: posNum, posDisplay, scoreToPar, today, thru, status: playerStatus };
+    }
+
+    const eventStatus = pgaEvent.status?.type?.name || '';
+    const isComplete = eventStatus === 'STATUS_FINAL' || pgaEvent.status?.type?.completed === true;
+
+    return {
+      name: pgaEvent.name || 'PGA Championship',
+      round: pgaEvent.status?.period || Math.max(...competitors.map(c => c.status?.period || 0), 0) || 1,
+      status: eventStatus,
+      isComplete,
+      scores,
+      statusDisplay: pgaEvent.status?.type?.shortDetail || ''
+    };
+  } catch (err) {
+    console.error('Failed to fetch ESPN data:', err);
+    return null;
+  }
+}
+
+// ============================================================
+// Match golfer name to ESPN data
+// ============================================================
+function findGolferScore(golferName) {
+  if (!tournamentData || !tournamentData.scores) return null;
+
+  const normalized = normalizeName(golferName);
+
+  for (const [espnName, data] of Object.entries(tournamentData.scores)) {
+    if (normalizeName(espnName) === normalized) return data;
+  }
+
+  // Last name match
+  const lastName = normalized.split(' ').pop();
+  for (const [espnName, data] of Object.entries(tournamentData.scores)) {
+    if (normalizeName(espnName).split(' ').pop() === lastName) return data;
+  }
+
+  return null;
+}
+
+// ============================================================
+// Determine tier from picks
+// ============================================================
+function getTier(entry, name) {
+  if (entry.picks.tier1.includes(name)) return 1;
+  if (entry.picks.tier2.includes(name)) return 2;
+  if (entry.picks.tier3.includes(name)) return 3;
+  if (entry.picks.tier4.includes(name)) return 4;
+  if (entry.picks.tier5.includes(name)) return 5;
+  return 0;
+}
+
+// ============================================================
+// Calculate pool standings
+// ============================================================
+function calculateStandings(entries) {
+  const standings = entries.map(entry => {
+    const allPicks = [
+      ...(entry.picks?.tier1 || []),
+      ...(entry.picks?.tier2 || []),
+      ...(entry.picks?.tier3 || []),
+      ...(entry.picks?.tier4 || []),
+      ...(entry.picks?.tier5 || [])
+    ];
+
+    const golferDetails = allPicks.map(name => {
+      const score = findGolferScore(name);
+      const tier = getTier(entry, name);
+      let points;
+
+      if (!score) {
+        points = WD_POINTS;
+        return { name, tier, points, posDisplay: 'N/A', scoreToPar: '--', today: '--', thru: '--', status: 'unknown' };
+      }
+
+      if (score.status === 'MC') points = MC_POINTS;
+      else if (score.status === 'WD') points = WD_POINTS;
+      else points = getPointsForPosition(score.position);
+
+      return { name, tier, points, posDisplay: score.posDisplay, scoreToPar: score.scoreToPar, today: score.today, thru: score.thru, status: score.status };
+    });
+
+    const sorted = [...golferDetails].sort((a, b) => a.points - b.points);
+    const countingIndices = new Set(sorted.slice(0, 4).map(g => golferDetails.indexOf(g)));
+    golferDetails.forEach((g, i) => { g.counting = countingIndices.has(i); });
+
+    const totalPoints = sorted.slice(0, 4).reduce((sum, g) => sum + g.points, 0);
+
+    return { name: entry.name, totalPoints, golfers: golferDetails, tiebreakers: entry.tiebreakers || {} };
+  });
+
+  standings.sort((a, b) => a.totalPoints - b.totalPoints);
+
+  let rank = 1;
+  standings.forEach((s, i) => {
+    if (i > 0 && s.totalPoints === standings[i - 1].totalPoints) {
+      s.rank = standings[i - 1].rank;
+    } else {
+      s.rank = rank;
+    }
+    rank = i + 2;
+  });
+
+  return standings;
+}
+
+// ============================================================
+// Render
+// ============================================================
+function renderPreTournament(poolData) {
+  document.getElementById('preTournament').style.display = 'block';
+  document.getElementById('leaderboardContainer').style.display = 'none';
+  document.getElementById('statsBar').style.display = 'none';
+
+  const now = new Date();
+  const diff = DEADLINE - now;
+  if (diff > 0) {
+    const days = Math.floor(diff / 86400000);
+    const hrs = Math.floor((diff % 86400000) / 3600000);
+    const mins = Math.floor((diff % 3600000) / 60000);
+    document.getElementById('countdown').textContent = `${days}d ${hrs}h ${mins}m until tee-off`;
+  } else {
+    document.getElementById('countdown').textContent = 'Starting soon...';
+  }
+
+  const list = document.getElementById('entriesList');
+  list.innerHTML = '';
+  if (poolData && poolData.entries) {
+    poolData.entries.forEach(e => {
+      const li = document.createElement('li');
+      li.innerHTML = `<span class="entry-check">&#10003;</span> ${e.name}`;
+      list.appendChild(li);
+    });
+    document.getElementById('statusEntries').innerHTML = `<strong>${poolData.entries.length}</strong> entries`;
+  }
+}
+
+function renderLeaderboard(standings) {
+  document.getElementById('preTournament').style.display = 'none';
+  document.getElementById('leaderboardContainer').style.display = 'block';
+
+  const container = document.getElementById('leaderboardCards');
+  container.innerHTML = '';
+
+  standings.forEach((entry, idx) => {
+    const card = document.createElement('div');
+    card.className = `leaderboard-card${entry.rank <= 3 ? ' rank-' + entry.rank : ''}`;
+
+    const rankClass = entry.rank <= 3 ? '' : ' default';
+
+    // Movement indicator
+    let movementHtml = '';
+    if (previousStandings) {
+      const prev = previousStandings.find(p => p.name === entry.name);
+      if (prev) {
+        if (prev.rank > entry.rank) movementHtml = `<span class="movement-arrow up">&#9650; ${prev.rank - entry.rank}</span>`;
+        else if (prev.rank < entry.rank) movementHtml = `<span class="movement-arrow down">&#9660; ${entry.rank - prev.rank}</span>`;
+        else movementHtml = `<span class="movement-arrow same">&#9644;</span>`;
+      }
+    }
+
+    // Best golfer subtitle
+    const bestGolfer = entry.golfers.filter(g => g.counting).sort((a, b) => a.points - b.points)[0];
+    const bestText = bestGolfer ? `Best: ${bestGolfer.name} (${bestGolfer.posDisplay})` : '';
+
+    // Sort: counting first by points, then non-counting
+    const counting = entry.golfers.filter(g => g.counting).sort((a, b) => a.points - b.points);
+    const notCounting = entry.golfers.filter(g => !g.counting).sort((a, b) => a.points - b.points);
+    const orderedGolfers = [...counting, ...notCounting];
+
+    card.innerHTML = `
+      <div class="card-header" onclick="toggleCard(this)">
+        <div class="rank-badge${rankClass}">${entry.rank}</div>
+        <div class="card-name-area">
+          <div class="card-name">${entry.name} ${movementHtml}</div>
+          <div class="card-subtitle">${bestText}</div>
+        </div>
+        <div class="card-score">
+          <div class="total">${entry.totalPoints}</div>
+          <div class="label">points</div>
+        </div>
+        <div class="expand-icon">&#9660;</div>
+      </div>
+      <div class="card-body">
+        <div class="golfer-grid">
+        ${orderedGolfers.map(g => `
+          <div class="golfer-row ${g.counting ? 'counting' : 'not-counting'}">
+            <div class="golfer-tier-dot t${g.tier}"></div>
+            <div class="golfer-name">${g.name}</div>
+            <div class="golfer-position ${g.status === 'MC' ? 'golfer-mc' : g.status === 'WD' ? 'golfer-wd' : ''}">${g.posDisplay}</div>
+            <div class="golfer-score-detail">${g.status === 'MC' || g.status === 'WD' || g.status === 'unknown' ? '' : g.scoreToPar !== '--' ? g.scoreToPar + (g.thru !== '--' && g.thru !== 'F' ? ' (thru ' + g.thru + ')' : g.thru === 'F' ? ' (F)' : '') : ''}</div>
+            <div class="golfer-pts ${g.counting ? 'counting-pts' : 'not-counting-pts'}">${g.points}</div>
+          </div>
+        `).join('')}
+        </div>
+        ${entry.tiebreakers && (entry.tiebreakers.score || entry.tiebreakers.playoff || entry.tiebreakers.leader) ? `
+          <div class="card-tiebreakers">
+            <strong>Tiebreakers:</strong>
+            ${entry.tiebreakers.score ? ' Score: ' + entry.tiebreakers.score : ''}
+            ${entry.tiebreakers.playoff ? ' &bull; Playoff: ' + entry.tiebreakers.playoff : ''}
+            ${entry.tiebreakers.leader ? ' &bull; Sat. leader: ' + entry.tiebreakers.leader : ''}
+          </div>
+        ` : ''}
+      </div>
+    `;
+
+    container.appendChild(card);
+  });
+
+  // Auto-expand first card
+  const firstCard = container.querySelector('.leaderboard-card');
+  if (firstCard) firstCard.classList.add('expanded');
+}
+
+function renderStats(standings) {
+  if (!standings.length || !tournamentData) {
+    document.getElementById('statsBar').style.display = 'none';
+    return;
+  }
+
+  const statsBar = document.getElementById('statsBar');
+  statsBar.style.display = 'grid';
+
+  // Find stats
+  const leader = standings[0];
+  const lastPlace = standings[standings.length - 1];
+  const gap = lastPlace.totalPoints - leader.totalPoints;
+
+  // Best single golfer pick
+  let bestPick = { name: '--', pts: 999, owner: '' };
+  standings.forEach(s => {
+    s.golfers.forEach(g => {
+      if (g.points < bestPick.pts) {
+        bestPick = { name: g.name, pts: g.points, owner: s.name, pos: g.posDisplay };
+      }
+    });
+  });
+
+  // Most common pick
+  const pickCounts = {};
+  standings.forEach(s => s.golfers.forEach(g => { pickCounts[g.name] = (pickCounts[g.name] || 0) + 1; }));
+  const mostPopular = Object.entries(pickCounts).sort((a, b) => b[1] - a[1])[0];
+
+  statsBar.innerHTML = `
+    <div class="stat-card">
+      <div class="stat-label">Leader</div>
+      <div class="stat-value">${leader.name}</div>
+      <div class="stat-detail">${leader.totalPoints} pts</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Gap to Last</div>
+      <div class="stat-value">${gap}</div>
+      <div class="stat-detail">pts separating field</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Best Pick</div>
+      <div class="stat-value">${bestPick.name}</div>
+      <div class="stat-detail">${bestPick.pos} (${bestPick.pts} pts) — ${bestPick.owner}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Most Popular</div>
+      <div class="stat-value">${mostPopular ? mostPopular[0] : '--'}</div>
+      <div class="stat-detail">${mostPopular ? mostPopular[1] + ' picks' : ''}</div>
+    </div>
+  `;
+}
+
+function toggleCard(headerEl) {
+  headerEl.parentElement.classList.toggle('expanded');
+}
+
+function expandAll() {
+  document.querySelectorAll('.leaderboard-card').forEach(c => c.classList.add('expanded'));
+}
+function collapseAll() {
+  document.querySelectorAll('.leaderboard-card').forEach(c => c.classList.remove('expanded'));
+}
+
+// ============================================================
+// Auto-scroll (TV mode)
+// ============================================================
+function toggleAutoScroll() {
+  autoScrollActive = !autoScrollActive;
+  const btn = document.getElementById('btnAutoScroll');
+  const indicator = document.getElementById('scrollIndicator');
+
+  if (autoScrollActive) {
+    btn.classList.add('active');
+    btn.innerHTML = '<span class="icon">&#9632;</span> Stop Scroll';
+    indicator.classList.add('visible');
+    expandAll();
+    startAutoScroll();
+  } else {
+    btn.classList.remove('active');
+    btn.innerHTML = '<span class="icon">&#9654;</span> TV Auto-Scroll';
+    indicator.classList.remove('visible');
+    clearInterval(autoScrollTimer);
+  }
+}
+
+function startAutoScroll() {
+  let pauseFrames = 0;
+  autoScrollTimer = setInterval(() => {
+    if (!autoScrollActive) return;
+
+    // Pause at the bottom before looping back to top
+    if (pauseFrames > 0) {
+      pauseFrames--;
+      return;
+    }
+
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    const current = window.scrollY;
+
+    if (current >= maxScroll - 5) {
+      // Reached bottom — pause 3 seconds then jump to top
+      pauseFrames = 100; // 100 frames * 30ms = 3 seconds
+      setTimeout(() => {
+        if (autoScrollActive) {
+          window.scrollTo({ top: 0, behavior: 'auto' });
+        }
+      }, 3000);
+    } else {
+      window.scrollBy({ top: 1, behavior: 'auto' });
+    }
+  }, 30);
+}
+
+// ============================================================
+// Champion + Confetti
+// ============================================================
+function showChampion(standings) {
+  if (!standings.length) return;
+  const winner = standings[0];
+  document.getElementById('championName').textContent = winner.name;
+  document.getElementById('championScore').textContent = `${winner.totalPoints} points`;
+  document.getElementById('championBanner').classList.add('visible');
+  launchConfetti();
+}
+
+function launchConfetti() {
+  const canvas = document.getElementById('confettiCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const colors = ['#C8A951', '#006747', '#E8D48B', '#FFFFFF', '#004D35', '#FFD700'];
+  const particles = [];
+
+  for (let i = 0; i < 200; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height - canvas.height,
+      w: Math.random() * 10 + 4,
+      h: Math.random() * 6 + 2,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      vx: (Math.random() - 0.5) * 4,
+      vy: Math.random() * 3 + 2,
+      rot: Math.random() * 360,
+      rotSpeed: (Math.random() - 0.5) * 12,
+      opacity: 1
+    });
+  }
+
+  let frame = 0;
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let alive = false;
+
+    particles.forEach(p => {
+      if (p.opacity <= 0) return;
+      alive = true;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.rot += p.rotSpeed;
+      p.vy += 0.04;
+      if (frame > 150) p.opacity -= 0.006;
+
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot * Math.PI / 180);
+      ctx.globalAlpha = Math.max(0, p.opacity);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    });
+
+    frame++;
+    if (alive && frame < 500) requestAnimationFrame(animate);
+    else ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+  animate();
+}
+
+// ============================================================
+// Status updates
+// ============================================================
+function updateStatus(tournData) {
+  const now = new Date();
+  const statusEl = document.getElementById('statusTournament');
+  const refreshEl = document.getElementById('statusRefresh');
+
+  if (tournData) {
+    let statusText = tournData.name;
+    if (tournData.isComplete) {
+      statusText += ' — <strong>Final</strong>';
+    } else if (tournData.round) {
+      statusText += ` — Round ${tournData.round}`;
+      if (tournData.statusDisplay) statusText += ` (${tournData.statusDisplay})`;
+    }
+    statusEl.innerHTML = `<span class="status-live"><span class="pulse"></span> LIVE</span> &nbsp; ${statusText}`;
+  }
+
+  refreshEl.innerHTML = `Last updated: <strong>${now.toLocaleTimeString()}</strong>`;
+}
+
+// ============================================================
+// Main refresh loop
+// ============================================================
+async function refresh() {
+  const now = new Date();
+  const isLocked = now >= DEADLINE;
+
+  const poolData = await fetchPoolEntries();
+
+  if (!isLocked) {
+    renderPreTournament(poolData);
+    return;
+  }
+
+  tournamentData = await fetchESPNData();
+  updateStatus(tournamentData);
+
+  if (poolData && poolData.entries && poolData.isLocked) {
+    const standings = calculateStandings(poolData.entries);
+    renderLeaderboard(standings);
+    renderStats(standings);
+
+    document.getElementById('statusEntries').innerHTML = `<strong>${poolData.entries.length}</strong> entries`;
+
+    if (tournamentData && tournamentData.isComplete && !isTournamentComplete) {
+      isTournamentComplete = true;
+      showChampion(standings);
+    }
+
+    previousStandings = standings;
+  } else {
+    renderPreTournament(poolData);
+  }
+}
+
+// ============================================================
+// Init
+// ============================================================
+async function init() {
+  await refresh();
+  refreshTimer = setInterval(refresh, REFRESH_INTERVAL);
+}
+
+init();
+</script>
+
+</body>
+</html>

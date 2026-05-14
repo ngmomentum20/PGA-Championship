@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 PGA Championship Pool — Make Your Picks</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --pga-blue: #00205B;
+  --pga-dark: #001A4D;
+  --pga-deeper: #000D2B;
+  --gold: #D4A843;
+  --gold-light: #E8D48B;
+  --cream: #FDF8EC;
+  --cream-dark: #F5EDD6;
+  --text: #1A1F2E;
+  --text-light: #4A5A6A;
+  --white: #FFFFFF;
+  --red: #C0392B;
+  --shadow: 0 2px 12px rgba(0,13,43,0.12);
+  --shadow-lg: 0 8px 32px rgba(0,13,43,0.18);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--cream);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* Header */
+.header {
+  background: linear-gradient(170deg, var(--pga-deeper) 0%, var(--pga-blue) 60%, #1A3A7A 100%);
+  padding: 2.5rem 2rem 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.header::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.015) 40px, rgba(255,255,255,0.015) 80px);
+}
+.header-content { position: relative; z-index: 1; }
+.header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.4rem;
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+.header .subtitle {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.7);
+  margin-top: 0.4rem;
+  font-weight: 300;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.header .dates {
+  display: inline-block;
+  margin-top: 0.75rem;
+  background: rgba(0,0,0,0.2);
+  border: 1px solid rgba(200,169,81,0.3);
+  border-radius: 20px;
+  padding: 0.3rem 1rem;
+  font-size: 0.75rem;
+  color: var(--gold-light);
+  letter-spacing: 0.08em;
+}
+.nav-link {
+  display: inline-block;
+  margin-top: 0.75rem;
+  color: var(--gold-light);
+  font-size: 0.8rem;
+  text-decoration: none;
+  border: 1px solid rgba(200,169,81,0.4);
+  padding: 0.3rem 1rem;
+  border-radius: 20px;
+  transition: all 0.2s;
+}
+.nav-link:hover { background: rgba(200,169,81,0.15); }
+
+/* Pool meta */
+.pool-meta {
+  text-align: center;
+  padding: 0.5rem;
+  font-size: 0.72rem;
+  color: var(--text-light);
+  background: var(--cream-dark);
+  border-bottom: 1px solid #E0E4D4;
+  letter-spacing: 0.04em;
+}
+
+/* Auth section */
+.auth-section {
+  background: var(--white);
+  border-bottom: 1px solid rgba(0,100,71,0.1);
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,13,43,0.06);
+}
+.auth-section h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  color: var(--pga-dark);
+  margin-bottom: 0.75rem;
+}
+.auth-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+.auth-group {
+  flex: 1;
+  min-width: 140px;
+}
+.auth-group label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.25rem;
+}
+.auth-group input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1.5px solid #D0D8C8;
+  border-radius: 6px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border 0.2s;
+}
+.auth-group input:focus { border-color: var(--pga-blue); }
+.auth-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+.auth-msg {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+  display: none;
+}
+.auth-msg.error { display: block; background: #FDE8E8; color: var(--red); }
+.auth-msg.success { display: block; background: #E8F5E0; color: #2D6B2A; }
+.auth-msg.info { display: block; background: #E0EEF9; color: #2A5A8B; }
+
+/* Deadline banner */
+.deadline-banner {
+  background: linear-gradient(135deg, #C0392B, #96281B);
+  color: var(--white);
+  text-align: center;
+  padding: 0.75rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: none;
+}
+.deadline-banner.visible { display: block; }
+
+/* Instructions */
+.instructions {
+  background: linear-gradient(135deg, var(--pga-dark) 0%, var(--pga-blue) 100%);
+  color: var(--white);
+  padding: 1.2rem 1.5rem;
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+.instructions h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  color: var(--gold);
+  margin-bottom: 0.5rem;
+}
+.instructions .rules-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.5rem 1.5rem;
+}
+.instructions .rule {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+.instructions .rule-tier {
+  font-weight: 700;
+  color: var(--gold-light);
+  white-space: nowrap;
+  min-width: 70px;
+}
+.divider {
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold), transparent);
+}
+
+/* Pick area (hidden until authenticated) */
+#pickArea { display: none; }
+#pickArea.visible { display: block; }
+
+/* Tier sections */
+.tier-section { padding: 1rem 1.5rem 1.25rem; }
+.tier-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid;
+}
+.tier-header.tier-1 { border-color: var(--gold); }
+.tier-header.tier-2 { border-color: #7FB069; }
+.tier-header.tier-3 { border-color: #5B9BD5; }
+.tier-header.tier-4 { border-color: #D4915E; }
+.tier-header.tier-5 { border-color: #9B8EC0; }
+.tier-badge {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--white);
+  flex-shrink: 0;
+}
+.tier-1 .tier-badge { background: linear-gradient(135deg, #C8A951, #A68B3A); }
+.tier-2 .tier-badge { background: linear-gradient(135deg, #7FB069, #5A8A44); }
+.tier-3 .tier-badge { background: linear-gradient(135deg, #5B9BD5, #3A78B0); }
+.tier-4 .tier-badge { background: linear-gradient(135deg, #D4915E, #B87040); }
+.tier-5 .tier-badge { background: linear-gradient(135deg, #9B8EC0, #7A6CA0); }
+.tier-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--pga-dark);
+}
+.tier-pick-count {
+  margin-left: auto;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+.tier-1 .tier-pick-count { background: #FDF3D7; color: #8B6F2A; }
+.tier-2 .tier-pick-count { background: #E8F5E0; color: #3D6B2A; }
+.tier-3 .tier-pick-count { background: #E0EEF9; color: #2A5A8B; }
+.tier-4 .tier-pick-count { background: #FDE8D8; color: #8B5A2A; }
+.tier-5 .tier-pick-count { background: #EDE8F5; color: #5A4A7B; }
+
+/* Player grid */
+.player-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+  gap: 0.5rem;
+}
+.player-card {
+  background: var(--white);
+  border: 1.5px solid #E0E8D8;
+  border-radius: 8px;
+  padding: 0.6rem 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  user-select: none;
+}
+.player-card:hover {
+  border-color: var(--pga-blue);
+  box-shadow: 0 2px 8px rgba(0,100,71,0.1);
+  transform: translateY(-1px);
+}
+.player-card.selected {
+  background: var(--pga-blue);
+  border-color: var(--pga-dark);
+  color: var(--white);
+  box-shadow: var(--shadow);
+}
+.player-card.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.player-card .check {
+  width: 18px; height: 18px;
+  border: 1.5px solid #B8C8A8;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+  font-size: 0.7rem;
+}
+.player-card.selected .check {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--pga-deeper);
+}
+.player-name {
+  font-weight: 500;
+  font-size: 0.82rem;
+  line-height: 1.2;
+  flex: 1;
+}
+.player-odds {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-light);
+  white-space: nowrap;
+}
+.player-card.selected .player-odds { color: var(--gold-light); }
+
+/* Tiebreaker */
+.tiebreaker-section {
+  background: var(--white);
+  border-top: 2px solid var(--gold);
+  padding: 1.25rem 1.5rem;
+}
+.tiebreaker-section h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  color: var(--pga-dark);
+  margin-bottom: 0.6rem;
+}
+.tiebreaker-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.tiebreaker-group {
+  flex: 1;
+  min-width: 180px;
+}
+.tiebreaker-group label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.3rem;
+}
+.tiebreaker-group input, .tiebreaker-group select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1.5px solid #D0D8C8;
+  border-radius: 6px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  outline: none;
+  transition: border 0.2s;
+}
+.tiebreaker-group input:focus, .tiebreaker-group select:focus {
+  border-color: var(--pga-blue);
+}
+
+/* Scoring ref */
+.scoring-ref {
+  background: var(--cream-dark);
+  margin: 0 1.5rem 1rem;
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  border: 1px solid #D8DDCA;
+}
+.scoring-ref h4 {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.9rem;
+  color: var(--pga-dark);
+  margin-bottom: 0.5rem;
+}
+.scoring-table {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 0.3rem;
+  font-size: 0.78rem;
+}
+.scoring-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.2rem 0;
+}
+.scoring-item span:first-child { color: var(--text-light); }
+.scoring-item span:last-child { font-weight: 700; color: var(--pga-dark); }
+
+/* Actions */
+.actions {
+  padding: 1rem 1.5rem 2rem;
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.btn {
+  padding: 0.7rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--pga-blue), var(--pga-dark));
+  color: var(--white);
+  box-shadow: var(--shadow);
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: var(--shadow-lg); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.btn-secondary {
+  background: var(--white);
+  color: var(--pga-blue);
+  border: 1.5px solid var(--pga-blue);
+}
+.btn-secondary:hover { background: #F0F8F4; }
+.btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+}
+
+/* Summary card */
+.summary-card {
+  display: none;
+  background: var(--white);
+  margin: 1rem 1.5rem;
+  border-radius: 12px;
+  border: 2px solid var(--gold);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+.summary-card.visible { display: block; }
+.summary-header {
+  background: linear-gradient(135deg, var(--pga-deeper), var(--pga-blue));
+  padding: 1.25rem 1.5rem;
+  text-align: center;
+}
+.summary-header h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem;
+  color: var(--gold);
+}
+.summary-header .entrant-name {
+  color: var(--white);
+  font-size: 1rem;
+  margin-top: 0.25rem;
+}
+.summary-body { padding: 1.25rem 1.5rem; }
+.summary-tier { margin-bottom: 0.75rem; }
+.summary-tier-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.25rem;
+}
+.summary-players {
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+.summary-tiebreaker {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #E0E8D8;
+  font-size: 0.85rem;
+  color: var(--text-light);
+}
+.summary-footer {
+  background: var(--cream);
+  padding: 0.75rem 1.5rem;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--text-light);
+}
+
+/* Loading overlay */
+.loading {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,13,43,0.3);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.loading.visible { display: flex; }
+.loading-spinner {
+  background: var(--white);
+  padding: 2rem 3rem;
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+  font-weight: 600;
+  color: var(--pga-dark);
+}
+.loading-spinner::before {
+  content: '';
+  display: block;
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--cream-dark);
+  border-top-color: var(--pga-blue);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 0.75rem;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Responsive */
+@media (max-width: 600px) {
+  .header h1 { font-size: 1.8rem; }
+  .player-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  .auth-row { flex-direction: column; }
+  .tier-section { padding: 0.75rem 1rem; }
+  .actions { padding: 1rem; }
+}
+
+@media print {
+  body { background: white; }
+  .header { padding: 1rem; }
+  .actions, .btn, .auth-section, .deadline-banner { display: none !important; }
+  .player-card { font-size: 0.7rem; padding: 0.3rem 0.5rem; }
+  #pickArea { display: block !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="loading" id="loadingOverlay">
+  <div class="loading-spinner">Submitting...</div>
+</div>
+
+<div class="header">
+  <div class="header-content">
+    <h1>The PGA Championship Pool</h1>
+    <div class="subtitle">Aronimink Golf Club &bull; Newtown Square, PA</div>
+    <div class="dates">May 14 &ndash; 17, 2026</div>
+    <br>
+    <a href="leaderboard.html" class="nav-link">View Leaderboard &rarr;</a>
+  </div>
+</div>
+
+<div class="pool-meta">
+  Pick 8 golfers across 5 tiers &bull; Best 4 of 8 finishing positions &bull; Lowest score wins
+</div>
+
+<div class="pool-meta" id="countdownBar" style="background: var(--pga-deeper); color: var(--gold-light); font-weight: 600; font-size: 0.78rem; letter-spacing: 0.06em; border-bottom: 1px solid rgba(200,169,81,0.2);">
+  <span id="countdownText"></span>
+</div>
+
+<div class="deadline-banner" id="deadlineBanner">
+  Submissions are closed — the tournament has started! <a href="leaderboard.html" style="color: var(--gold-light); text-decoration: underline;">View the Leaderboard</a>
+</div>
+
+<!-- Auth Section -->
+<div class="auth-section" id="authSection">
+  <h3>Enter the Pool</h3>
+  <div class="auth-row">
+    <div class="auth-group">
+      <label for="authName">Your Name</label>
+      <input type="text" id="authName" placeholder="e.g. Nick">
+    </div>
+    <div class="auth-group">
+      <label for="authPasscode">Passcode <span style="font-weight:400; text-transform:none;">(create one or enter existing)</span></label>
+      <input type="password" id="authPasscode" placeholder="Min 3 characters">
+    </div>
+    <div class="auth-actions">
+      <button class="btn btn-primary btn-sm" id="btnAuth" onclick="authenticate()">Start Picking</button>
+    </div>
+  </div>
+  <div class="auth-msg" id="authMsg"></div>
+</div>
+
+<!-- Pick Area (hidden until auth) -->
+<div id="pickArea">
+  <div class="instructions">
+    <h3>How It Works</h3>
+    <div class="rules-grid">
+      <div class="rule"><span class="rule-tier">Tier 1:</span> Pick 1 — Favorites</div>
+      <div class="rule"><span class="rule-tier">Tier 2:</span> Pick 2 — Contenders</div>
+      <div class="rule"><span class="rule-tier">Tier 3:</span> Pick 2 — Mid-Range</div>
+      <div class="rule"><span class="rule-tier">Tier 4:</span> Pick 2 — Sleepers</div>
+      <div class="rule"><span class="rule-tier">Tier 5:</span> Pick 1 — Longshot</div>
+      <div class="rule"><span class="rule-tier">Scoring:</span> Best 4 of 8 finishing positions</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div id="tiersContainer"></div>
+
+  <div class="tiebreaker-section">
+    <h3>Tiebreakers</h3>
+    <div class="tiebreaker-row">
+      <div class="tiebreaker-group">
+        <label>Winner's Final Score (vs par)</label>
+        <input type="number" id="tbScore" placeholder="e.g. -12" min="-25" max="10">
+      </div>
+      <div class="tiebreaker-group">
+        <label>Will there be a playoff?</label>
+        <select id="tbPlayoff">
+          <option value="">Select...</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </div>
+      <div class="tiebreaker-group">
+        <label>Saturday Moving Day Leader</label>
+        <input type="text" id="tbLeader" placeholder="e.g. Scheffler">
+      </div>
+    </div>
+  </div>
+
+  <div class="scoring-ref">
+    <h4>Position Scoring Reference</h4>
+    <div class="scoring-table">
+      <div class="scoring-item"><span>Win</span><span>1 pt</span></div>
+      <div class="scoring-item"><span>2nd</span><span>2 pts</span></div>
+      <div class="scoring-item"><span>3rd</span><span>3 pts</span></div>
+      <div class="scoring-item"><span>T3–5</span><span>4 pts</span></div>
+      <div class="scoring-item"><span>T6–10</span><span>8 pts</span></div>
+      <div class="scoring-item"><span>T11–20</span><span>15 pts</span></div>
+      <div class="scoring-item"><span>T21–30</span><span>22 pts</span></div>
+      <div class="scoring-item"><span>T31–40</span><span>30 pts</span></div>
+      <div class="scoring-item"><span>T41–50</span><span>38 pts</span></div>
+      <div class="scoring-item"><span>50+</span><span>45 pts</span></div>
+      <div class="scoring-item"><span>MC</span><span>50 pts</span></div>
+      <div class="scoring-item"><span>WD</span><span>55 pts</span></div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" id="btnSubmit" disabled onclick="submitEntry()">Submit Entry</button>
+    <button class="btn btn-secondary" onclick="clearAll()">Clear Picks</button>
+  </div>
+
+  <div class="summary-card" id="summaryCard">
+    <div class="summary-header">
+      <h2>Entry Confirmed</h2>
+      <div class="entrant-name" id="summaryName"></div>
+    </div>
+    <div class="summary-body" id="summaryBody"></div>
+    <div class="summary-footer">2026 PGA Championship Pool &bull; Aronimink Golf Club &bull; May 14–17</div>
+  </div>
+</div>
+
+<!-- Full Scoring Explanation -->
+<div style="max-width: 720px; margin: 1.5rem auto; padding: 0 1.5rem;">
+  <div style="background: var(--white); border-radius: 12px; border: 2px solid var(--pga-blue); box-shadow: var(--shadow); overflow: hidden;">
+    <div style="background: linear-gradient(135deg, var(--pga-deeper), var(--pga-blue)); padding: 1.25rem 1.5rem;">
+      <h3 style="font-family: 'Playfair Display', serif; font-size: 1.15rem; color: var(--gold); margin: 0;">How Scoring Works</h3>
+      <p style="color: rgba(255,255,255,0.7); font-size: 0.78rem; margin-top: 0.25rem;">Read this before you pick — no surprises later!</p>
+    </div>
+    <div style="padding: 1.25rem 1.5rem; font-size: 0.85rem; line-height: 1.7; color: var(--text);">
+
+      <p style="margin-bottom: 0.75rem;"><strong style="color: var(--pga-dark);">1. Pick 8 golfers across 5 tiers:</strong> Tier 1 (1 pick), Tier 2 (2 picks), Tier 3 (2 picks), Tier 4 (2 picks), Tier 5 (1 pick). Tiers are based on betting odds — Tier 1 has the favorites, Tier 5 the longshots.</p>
+
+      <p style="margin-bottom: 0.75rem;"><strong style="color: var(--pga-dark);">2. Points are based on finishing position:</strong> Each golfer earns points based on where they finish in the actual PGA Championship. Lower points = better. A win is 1 point, 2nd place is 2 points, and so on up the scale.</p>
+
+      <div style="background: var(--cream); border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 0.75rem;">
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.3rem 1rem; font-size: 0.8rem;">
+          <div style="display: flex; justify-content: space-between;"><span>Win</span><strong>1 pt</strong></div>
+          <div style="display: flex; justify-content: space-between;"><span>2nd</span><strong>2 pts</strong></div>
+          <div style="display: flex; justify-content: space-between;"><span>3rd</span><strong>3 pts</strong></div>
+          <div style="display: flex; justify-content: space-between;"><span>T3–5</span><strong>4 pts</strong></div>
+          <div style="display: flex; justify-content: space-between;"><span>T6–10</span><strong>8 pts</strong></div>
+          <div style="display: flex; justify-content: space-between;"><span>T11–20</span><strong>15 pts</strong></div>
+          <div style="display: flex; justify-content: space-between;"><span>T21–30</span><strong>22 pts</strong></div>
+          <div style="display: flex; justify-content: space-between;"><span>T31–40</span><strong>30 pts</strong></div>
+          <div style="display: flex; justify-content: space-between;"><span>T41–50</span><strong>38 pts</strong></div>
+          <div style="display: flex; justify-content: space-between;"><span>50+</span><strong>45 pts</strong></div>
+          <div style="display: flex; justify-content: space-between;"><span>Missed Cut</span><strong>50 pts</strong></div>
+          <div style="display: flex; justify-content: space-between;"><span>Withdrawn</span><strong>55 pts</strong></div>
+        </div>
+      </div>
+
+      <p style="margin-bottom: 0.75rem;"><strong style="color: var(--pga-dark);">3. Best 4 of 8 count:</strong> Only your 4 lowest-scoring (best-finishing) golfers count toward your total. This gives you some insurance if a pick misses the cut or has a rough weekend.</p>
+
+      <p style="margin-bottom: 0.75rem;"><strong style="color: var(--pga-dark);">4. Lowest total wins:</strong> Add up the points from your best 4 golfers. The person with the lowest combined score wins the pool.</p>
+
+      <p style="margin-bottom: 0.75rem;"><strong style="color: var(--pga-dark);">5. Tiebreakers (if needed):</strong> If two or more people have the same total points, ties are broken by: (1) closest prediction of the winner's final score vs. par, (2) correct playoff prediction, (3) correct Saturday moving day leader.</p>
+
+      <p style="margin-bottom: 0.75rem;"><strong style="color: var(--pga-dark);">6. Deadline:</strong> All picks must be submitted by <strong>Wednesday, May 14 at 11:59 PM ET</strong> (midnight tonight). You can edit your picks as many times as you want before the deadline using your name and passcode. After the deadline, all picks are locked and visible to everyone on the leaderboard.</p>
+
+      <p style="margin-bottom: 0;"><strong style="color: var(--pga-dark);">7. Live scoring:</strong> The leaderboard updates every 5 minutes during tournament play using live PGA Tour data. Scores will fluctuate throughout each round as golfers move up and down the leaderboard. Final standings are determined after the tournament concludes Sunday evening.</p>
+
+    </div>
+    <div style="background: var(--cream); padding: 0.75rem 1.5rem; text-align: center; font-size: 0.75rem; color: var(--text-light); border-top: 1px solid #E0E8D8;">
+      Good luck, and may the best picks win! &#127941;
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// CONFIGURATION — Replace this URL after deploying Apps Script
+// ============================================================
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyrBv9vlyH9xVkevZSB9GVHRBm7gtCOApIfG5PymHSdShB9KbMLTcLJ-Yd2miA7-Edt/exec';
+const DEADLINE = new Date('2026-05-15T04:00:00Z'); // Midnight ET May 14
+
+// ============================================================
+// Tier / Player Data
+// ============================================================
+const TIERS = [
+  {
+    name: "Tier 1 — Favorites", tier: 1, picks: 1,
+    players: [
+      { name: "Scottie Scheffler", odds: "+390" },
+      { name: "Rory McIlroy", odds: "+950" },
+      { name: "Cameron Young", odds: "+1200" },
+      { name: "Jon Rahm", odds: "+1500" },
+      { name: "Ludvig Aberg", odds: "+1800" },
+      { name: "Xander Schauffele", odds: "+1800" }
+    ]
+  },
+  {
+    name: "Tier 2 — Contenders", tier: 2, picks: 2,
+    players: [
+      { name: "Bryson DeChambeau", odds: "+2000" },
+      { name: "Matt Fitzpatrick", odds: "+2500" },
+      { name: "Tommy Fleetwood", odds: "+2500" },
+      { name: "Collin Morikawa", odds: "+4000" },
+      { name: "Patrick Cantlay", odds: "+4000" },
+      { name: "Brooks Koepka", odds: "+4000" },
+      { name: "Nicolai Hojgaard", odds: "+4500" },
+      { name: "Min Woo Lee", odds: "+5000" },
+      { name: "Chris Gotterup", odds: "+5000" },
+      { name: "Justin Rose", odds: "+5000" },
+      { name: "Rickie Fowler", odds: "+5000" },
+      { name: "Sahith Theegala", odds: "+5000" }
+    ]
+  },
+  {
+    name: "Tier 3 — Mid-Range", tier: 3, picks: 2,
+    players: [
+      { name: "Si Woo Kim", odds: "+5500" },
+      { name: "Jordan Spieth", odds: "+5500" },
+      { name: "Sam Burns", odds: "+5500" },
+      { name: "Justin Thomas", odds: "+5500" },
+      { name: "Russell Henley", odds: "+5500" },
+      { name: "Adam Scott", odds: "+6000" },
+      { name: "Viktor Hovland", odds: "+6000" },
+      { name: "Tyrrell Hatton", odds: "+6000" },
+      { name: "J.J. Spaun", odds: "+6500" },
+      { name: "Cameron Smith", odds: "+7000" },
+      { name: "Sungjae Im", odds: "+7000" },
+      { name: "Jason Day", odds: "+7000" },
+      { name: "Tom Kim", odds: "+7500" },
+      { name: "Billy Horschel", odds: "+7500" },
+      { name: "Denny McCarthy", odds: "+7500" }
+    ]
+  },
+  {
+    name: "Tier 4 — Sleepers", tier: 4, picks: 2,
+    players: [
+      { name: "Patrick Reed", odds: "+8000" },
+      { name: "Kurt Kitayama", odds: "+8000" },
+      { name: "Maverick McNealy", odds: "+8000" },
+      { name: "Robert MacIntyre", odds: "+8000" },
+      { name: "Sepp Straka", odds: "+8000" },
+      { name: "Joaquin Niemann", odds: "+10000" },
+      { name: "Hideki Matsuyama", odds: "+10000" },
+      { name: "Kristoffer Reitan", odds: "+10000" },
+      { name: "Harris English", odds: "+10000" },
+      { name: "Akshay Bhatia", odds: "+10000" },
+      { name: "Ben Griffin", odds: "+10000" },
+      { name: "Matt McCarty", odds: "+10000" },
+      { name: "Thomas Detry", odds: "+10000" },
+      { name: "Alex Fitzpatrick", odds: "+10000" },
+      { name: "Shane Lowry", odds: "+10000" },
+      { name: "Keegan Bradley", odds: "+10000" }
+    ]
+  },
+  {
+    name: "Tier 5 — Longshots", tier: 5, picks: 1,
+    players: [
+      { name: "Corey Conners", odds: "+12000" },
+      { name: "Daniel Berger", odds: "+12000" },
+      { name: "Davis Riley", odds: "+12000" },
+      { name: "Max Homa", odds: "+12000" },
+      { name: "Wyndham Clark", odds: "+12000" },
+      { name: "Harry Hall", odds: "+15000" },
+      { name: "Jacob Bridgeman", odds: "+15000" },
+      { name: "Aaron Rai", odds: "+15000" },
+      { name: "Nick Dunlap", odds: "+15000" },
+      { name: "Chris Kirk", odds: "+15000" },
+      { name: "Alex Noren", odds: "+17500" },
+      { name: "Brian Harman", odds: "+18000" },
+      { name: "Dustin Johnson", odds: "+20000" },
+      { name: "Gary Woodland", odds: "+22000" },
+      { name: "Brandt Snedeker", odds: "+25000" },
+      { name: "Casey Jarvis", odds: "+30000" },
+      { name: "Aldrich Potgieter", odds: "+30000" },
+      { name: "Emiliano Grillo", odds: "+35000" }
+    ]
+  }
+];
+
+// ============================================================
+// State
+// ============================================================
+const selections = {};
+TIERS.forEach(t => selections[t.tier] = []);
+let currentUser = null;
+let isEditing = false;
+
+// ============================================================
+// Deadline check
+// ============================================================
+function checkDeadline() {
+  if (new Date() >= DEADLINE) {
+    document.getElementById('deadlineBanner').classList.add('visible');
+    document.getElementById('authSection').style.display = 'none';
+    document.getElementById('pickArea').style.display = 'none';
+    return true;
+  }
+  return false;
+}
+
+// ============================================================
+// Authentication
+// ============================================================
+async function authenticate() {
+  const name = document.getElementById('authName').value.trim();
+  const passcode = document.getElementById('authPasscode').value.trim();
+  const msgEl = document.getElementById('authMsg');
+
+  if (!name) {
+    showMsg(msgEl, 'Please enter your name.', 'error');
+    return;
+  }
+  if (passcode.length < 3) {
+    showMsg(msgEl, 'Passcode must be at least 3 characters.', 'error');
+    return;
+  }
+
+  showLoading(true);
+
+  try {
+    // Try to load existing entry
+    const resp = await fetch(`${APPS_SCRIPT_URL}?action=loadEntry&name=${encodeURIComponent(name)}&passcode=${encodeURIComponent(passcode)}`);
+    const data = await resp.json();
+
+    if (data.success) {
+      // Existing entry found — load picks for editing
+      currentUser = { name, passcode };
+      isEditing = true;
+      loadExistingPicks(data.entry);
+      showMsg(msgEl, `Welcome back, ${name}! Your picks are loaded. Make changes and resubmit.`, 'success');
+      unlockPickArea();
+    } else if (data.error === 'No entry found for that name') {
+      // New user — start fresh
+      currentUser = { name, passcode };
+      isEditing = false;
+      showMsg(msgEl, `Welcome, ${name}! Select your golfers below.`, 'success');
+      unlockPickArea();
+    } else if (data.error === 'Incorrect passcode') {
+      showMsg(msgEl, 'That name is taken and the passcode is incorrect. Try again.', 'error');
+    } else {
+      showMsg(msgEl, data.error || 'Something went wrong.', 'error');
+    }
+  } catch (err) {
+    showMsg(msgEl, 'Could not connect to the server. Check the Apps Script URL.', 'error');
+    console.error(err);
+  }
+
+  showLoading(false);
+}
+
+function loadExistingPicks(entry) {
+  selections[1] = entry.tier1 ? [entry.tier1] : [];
+  selections[2] = [entry.tier2a, entry.tier2b].filter(Boolean);
+  selections[3] = [entry.tier3a, entry.tier3b].filter(Boolean);
+  selections[4] = [entry.tier4a, entry.tier4b].filter(Boolean);
+  selections[5] = entry.tier5 ? [entry.tier5] : [];
+
+  if (entry.tbScore !== '') document.getElementById('tbScore').value = entry.tbScore;
+  if (entry.tbPlayoff) document.getElementById('tbPlayoff').value = entry.tbPlayoff;
+  if (entry.tbLeader) document.getElementById('tbLeader').value = entry.tbLeader;
+
+  render();
+}
+
+function unlockPickArea() {
+  document.getElementById('pickArea').classList.add('visible');
+  document.getElementById('authSection').querySelector('h3').textContent =
+    `Picking as: ${currentUser.name}`;
+  document.getElementById('btnAuth').style.display = 'none';
+  render();
+}
+
+// ============================================================
+// Render tiers
+// ============================================================
+function render() {
+  const container = document.getElementById('tiersContainer');
+  container.innerHTML = '';
+
+  TIERS.forEach(tierData => {
+    const section = document.createElement('div');
+    section.className = 'tier-section';
+    const selected = selections[tierData.tier];
+    const full = selected.length >= tierData.picks;
+
+    section.innerHTML = `
+      <div class="tier-header tier-${tierData.tier}">
+        <div class="tier-badge">${tierData.tier}</div>
+        <div class="tier-title">${tierData.name}</div>
+        <div class="tier-pick-count">${selected.length} / ${tierData.picks}</div>
+      </div>
+      <div class="player-grid">
+        ${tierData.players.map(p => {
+          const isSel = selected.includes(p.name);
+          const isDis = full && !isSel;
+          return `
+            <div class="player-card ${isSel ? 'selected' : ''} ${isDis ? 'disabled' : ''}"
+                 onclick="togglePlayer(${tierData.tier}, '${p.name.replace(/'/g, "\\'")}')">
+              <div class="check">${isSel ? '&#10003;' : ''}</div>
+              <div class="player-name">${p.name}</div>
+              <div class="player-odds">${p.odds}</div>
+            </div>`;
+        }).join('')}
+      </div>`;
+    container.appendChild(section);
+  });
+
+  updateSubmitButton();
+}
+
+function togglePlayer(tier, name) {
+  const sel = selections[tier];
+  const tierData = TIERS.find(t => t.tier === tier);
+  const idx = sel.indexOf(name);
+  if (idx >= 0) {
+    sel.splice(idx, 1);
+  } else if (sel.length < tierData.picks) {
+    sel.push(name);
+  }
+  render();
+}
+
+function updateSubmitButton() {
+  const allFull = TIERS.every(t => selections[t.tier].length === t.picks);
+  document.getElementById('btnSubmit').disabled = !(allFull && currentUser);
+}
+
+function clearAll() {
+  TIERS.forEach(t => selections[t.tier] = []);
+  document.getElementById('summaryCard').classList.remove('visible');
+  render();
+}
+
+// ============================================================
+// Submit
+// ============================================================
+async function submitEntry() {
+  if (!currentUser) return;
+
+  showLoading(true);
+
+  const payload = {
+    action: 'submit',
+    name: currentUser.name,
+    passcode: currentUser.passcode,
+    tier1: selections[1][0] || '',
+    tier2a: selections[2][0] || '',
+    tier2b: selections[2][1] || '',
+    tier3a: selections[3][0] || '',
+    tier3b: selections[3][1] || '',
+    tier4a: selections[4][0] || '',
+    tier4b: selections[4][1] || '',
+    tier5: selections[5][0] || '',
+    tbScore: document.getElementById('tbScore').value,
+    tbPlayoff: document.getElementById('tbPlayoff').value,
+    tbLeader: document.getElementById('tbLeader').value
+  };
+
+  try {
+    const resp = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(payload)
+    });
+    const data = await resp.json();
+
+    if (data.success) {
+      showSummary();
+    } else {
+      alert(data.error || 'Submission failed.');
+    }
+  } catch (err) {
+    alert('Could not connect to server. Please try again.');
+    console.error(err);
+  }
+
+  showLoading(false);
+}
+
+function showSummary() {
+  const card = document.getElementById('summaryCard');
+  const body = document.getElementById('summaryBody');
+  document.getElementById('summaryName').textContent = currentUser.name;
+
+  const tierColors = { 1: '#8B6F2A', 2: '#3D6B2A', 3: '#2A5A8B', 4: '#8B5A2A', 5: '#5A4A7B' };
+  let html = '';
+  TIERS.forEach(t => {
+    const players = selections[t.tier];
+    html += `<div class="summary-tier">
+      <div class="summary-tier-label" style="color:${tierColors[t.tier]}">Tier ${t.tier}</div>
+      <div class="summary-players">${players.join(' &bull; ')}</div>
+    </div>`;
+  });
+
+  const tbScore = document.getElementById('tbScore').value;
+  const tbPlayoff = document.getElementById('tbPlayoff').value;
+  const tbLeader = document.getElementById('tbLeader').value;
+  if (tbScore || tbPlayoff || tbLeader) {
+    html += '<div class="summary-tiebreaker"><strong>Tiebreakers:</strong> ';
+    const parts = [];
+    if (tbScore) parts.push(`Winning score: ${tbScore}`);
+    if (tbPlayoff) parts.push(`Playoff: ${tbPlayoff}`);
+    if (tbLeader) parts.push(`Sat. leader: ${tbLeader}`);
+    html += parts.join(' &bull; ') + '</div>';
+  }
+
+  body.innerHTML = html;
+  card.classList.add('visible');
+  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// ============================================================
+// Helpers
+// ============================================================
+function showMsg(el, msg, type) {
+  el.textContent = msg;
+  el.className = 'auth-msg ' + type;
+}
+
+function showLoading(show) {
+  document.getElementById('loadingOverlay').classList.toggle('visible', show);
+}
+
+// ============================================================
+// Countdown Timer
+// ============================================================
+function updateCountdown() {
+  const now = new Date();
+  const diff = DEADLINE - now;
+  const el = document.getElementById('countdownText');
+  const bar = document.getElementById('countdownBar');
+
+  if (diff <= 0) {
+    bar.style.display = 'none';
+    return;
+  }
+
+  const days = Math.floor(diff / 86400000);
+  const hrs = Math.floor((diff % 86400000) / 3600000);
+  const mins = Math.floor((diff % 3600000) / 60000);
+  const secs = Math.floor((diff % 60000) / 1000);
+
+  let text = 'Picks lock in ';
+  if (days > 0) text += `${days}d ${hrs}h ${mins}m ${secs}s`;
+  else if (hrs > 0) text += `${hrs}h ${mins}m ${secs}s`;
+  else text += `${mins}m ${secs}s`;
+
+  el.textContent = text;
+}
+setInterval(updateCountdown, 1000);
+updateCountdown();
+
+// ============================================================
+// Init
+// ============================================================
+if (!checkDeadline()) {
+  render();
+}
+</script>
+
+</body>
+</html>
