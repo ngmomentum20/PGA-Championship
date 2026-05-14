@@ -890,7 +890,7 @@ async function refresh() {
     document.getElementById('statusText').textContent = statusText;
   }
 
-  if (poolData && poolData.isLocked && poolData.entries) {
+  if (poolData && poolData.entries && poolData.entries.length > 0 && poolData.entries[0].picks) {
     const standings = calculateStandings(poolData.entries);
     renderPool(standings);
     renderTournament();
