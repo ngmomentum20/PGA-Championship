@@ -21,6 +21,7 @@
   --text-light: #4A5A6A;
   --white: #FFFFFF;
   --red: #C0392B;
+  --green: #2ECC71;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -43,7 +44,7 @@ html, body {
   align-items: center;
   justify-content: space-between;
   padding: 0.5rem 1.25rem;
-  height: 52px;
+  height: 48px;
   flex-shrink: 0;
 }
 .top-bar-left {
@@ -53,13 +54,13 @@ html, body {
 }
 .top-bar h1 {
   font-family: 'Playfair Display', serif;
-  font-size: 1.3rem;
+  font-size: 1.25rem;
   font-weight: 900;
   color: var(--gold);
   letter-spacing: 0.04em;
 }
 .top-bar .event-info {
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   color: rgba(255,255,255,0.4);
   letter-spacing: 0.08em;
 }
@@ -103,13 +104,16 @@ html, body {
 
 /* ========== MAIN LAYOUT ========== */
 .main {
-  display: flex;
-  height: calc(100vh - 52px);
+  display: grid;
+  grid-template-columns: 42% 58%;
+  grid-template-rows: 1fr auto;
+  height: calc(100vh - 48px - 36px); /* top bar + ticker */
 }
 
 /* ========== LEFT PANEL — POOL ========== */
 .panel-pool {
-  width: 42%;
+  grid-column: 1;
+  grid-row: 1;
   background: linear-gradient(180deg, var(--pga-deeper) 0%, var(--pga-darkest) 100%);
   display: flex;
   flex-direction: column;
@@ -117,21 +121,118 @@ html, body {
   overflow: hidden;
 }
 .panel-header {
-  padding: 0.6rem 1rem;
+  padding: 0.5rem 1rem;
   text-align: center;
   flex-shrink: 0;
 }
 .panel-header h2 {
   font-family: 'Playfair Display', serif;
-  font-size: 1rem;
+  font-size: 0.95rem;
   color: var(--gold);
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 .panel-header .panel-sub {
-  font-size: 0.6rem;
+  font-size: 0.55rem;
   color: rgba(255,255,255,0.35);
   margin-top: 0.1rem;
+}
+
+/* ========== BOTTOM LEFT — GRAND SLAM ========== */
+.bottom-left {
+  grid-column: 1;
+  grid-row: 2;
+  background: linear-gradient(180deg, var(--pga-darkest), var(--pga-deeper));
+  border-right: 2px solid var(--gold);
+  border-top: 1px solid rgba(212,168,67,0.25);
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  max-height: 200px;
+}
+
+/* ========== GRAND SLAM TRACKER ========== */
+.grand-slam {
+  flex: 1;
+  background: linear-gradient(135deg, rgba(212,168,67,0.08), rgba(0,32,91,0.15));
+  padding: 0.5rem 0.75rem;
+  overflow: hidden;
+}
+.gs-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  margin-bottom: 0.25rem;
+}
+.gs-header h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.7rem;
+  color: var(--gold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.gs-trophy { font-size: 0.7rem; }
+.gs-standings {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.gs-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.18rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.65rem;
+}
+.gs-row.gs-leader {
+  background: rgba(212,168,67,0.12);
+}
+.gs-rank {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.5rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+.gs-rank.g1 { background: var(--gold); color: var(--pga-deeper); }
+.gs-rank.g2 { background: #888; color: var(--white); }
+.gs-rank.g3 { background: #8B5E3C; color: var(--white); }
+.gs-rank.gn { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.4); }
+.gs-name {
+  flex: 1;
+  font-weight: 600;
+  color: rgba(255,255,255,0.8);
+}
+.gs-majors {
+  display: flex;
+  gap: 0.2rem;
+  align-items: center;
+}
+.gs-major {
+  width: 34px;
+  text-align: center;
+  font-size: 0.55rem;
+  font-weight: 600;
+  padding: 0.12rem 0;
+  border-radius: 3px;
+  color: rgba(255,255,255,0.5);
+}
+.gs-major.won { background: var(--gold); color: var(--pga-deeper); }
+.gs-major.active { background: var(--pga-blue); color: var(--gold-light); border: 1px solid rgba(212,168,67,0.3); }
+.gs-major.future { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.2); }
+.gs-major.dnp { background: rgba(255,255,255,0.02); color: rgba(255,255,255,0.15); font-style: italic; }
+.gs-total {
+  font-weight: 800;
+  color: var(--gold);
+  font-size: 0.65rem;
+  width: 34px;
+  text-align: right;
 }
 
 /* Pool entries */
@@ -147,31 +248,36 @@ html, body {
   background: rgba(255,255,255,0.04);
   border: 1px solid rgba(200,169,81,0.1);
   border-radius: 10px;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.4rem;
   overflow: hidden;
-  transition: all 0.3s;
+  transition: all 0.5s ease;
 }
 .pool-entry.leader {
   border-color: var(--gold);
   background: rgba(200,169,81,0.08);
   box-shadow: 0 0 20px rgba(200,169,81,0.08);
+  animation: leaderGlow 3s ease-in-out infinite;
+}
+@keyframes leaderGlow {
+  0%, 100% { box-shadow: 0 0 15px rgba(200,169,81,0.08); }
+  50% { box-shadow: 0 0 25px rgba(200,169,81,0.15); }
 }
 
 .pool-entry-header {
   display: flex;
   align-items: center;
-  padding: 0.5rem 0.75rem;
-  gap: 0.6rem;
+  padding: 0.45rem 0.7rem;
+  gap: 0.5rem;
 }
 .pool-rank {
-  width: 30px; height: 30px;
+  width: 28px; height: 28px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: 'Playfair Display', serif;
   font-weight: 900;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   flex-shrink: 0;
 }
 .pool-rank.r1 {
@@ -185,18 +291,18 @@ html, body {
 .pool-name {
   flex: 1;
   font-family: 'Playfair Display', serif;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 700;
   color: var(--white);
 }
 .pool-pts {
   font-family: 'Playfair Display', serif;
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   font-weight: 900;
   color: var(--gold);
 }
 .pool-pts-label {
-  font-size: 0.5rem;
+  font-size: 0.45rem;
   color: rgba(255,255,255,0.35);
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -207,19 +313,20 @@ html, body {
 .pool-golfers {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.3rem;
-  padding: 0 0.75rem 0.5rem;
+  gap: 0.25rem;
+  padding: 0 0.7rem 0.4rem;
 }
 .golfer-chip {
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.25rem;
   background: rgba(255,255,255,0.06);
   border-radius: 6px;
-  padding: 0.2rem 0.5rem;
-  font-size: 0.62rem;
+  padding: 0.18rem 0.45rem;
+  font-size: 0.58rem;
   color: rgba(255,255,255,0.7);
   white-space: nowrap;
+  transition: all 0.3s ease;
 }
 .golfer-chip.counting {
   background: rgba(0,103,71,0.3);
@@ -228,7 +335,7 @@ html, body {
   font-weight: 600;
 }
 .golfer-chip.not-counting {
-  opacity: 0.4;
+  opacity: 0.35;
 }
 .chip-dot {
   width: 5px; height: 5px;
@@ -243,17 +350,18 @@ html, body {
 .chip-pos {
   font-weight: 700;
   color: var(--gold-light);
-  font-size: 0.58rem;
+  font-size: 0.54rem;
 }
 .golfer-chip.counting .chip-pos { color: #A8E6C8; }
 .chip-pts {
-  font-size: 0.55rem;
+  font-size: 0.5rem;
   color: rgba(255,255,255,0.35);
 }
 
 /* ========== RIGHT PANEL — TOURNAMENT ========== */
 .panel-tournament {
-  width: 58%;
+  grid-column: 2;
+  grid-row: 1 / 3;
   background: var(--cream);
   display: flex;
   flex-direction: column;
@@ -277,7 +385,7 @@ html, body {
 .tourn-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.78rem;
+  font-size: 0.76rem;
 }
 .tourn-table thead {
   position: sticky;
@@ -287,32 +395,34 @@ html, body {
 .tourn-table th {
   background: var(--pga-dark);
   color: var(--gold-light);
-  font-size: 0.6rem;
+  font-size: 0.55rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  padding: 0.4rem 0.6rem;
+  padding: 0.35rem 0.5rem;
   text-align: left;
   white-space: nowrap;
 }
-.tourn-table th:nth-child(1) { width: 45px; text-align: center; }
+.tourn-table th:nth-child(1) { width: 42px; text-align: center; }
 .tourn-table th:nth-child(3) { text-align: center; }
 .tourn-table th:nth-child(4) { text-align: center; }
 .tourn-table th:nth-child(5) { text-align: center; }
 
 .tourn-table td {
-  padding: 0.35rem 0.6rem;
+  padding: 0.3rem 0.5rem;
   border-bottom: 1px solid #E8EDE4;
   color: var(--text);
   white-space: nowrap;
 }
+.tourn-table tbody tr { transition: background 0.2s; }
 .tourn-table tbody tr:hover { background: #F0F8EC; }
+.tourn-table tbody tr.pool-pick-row { background: rgba(0,32,91,0.04); }
 
 .tourn-pos {
   font-weight: 800;
   color: var(--pga-dark);
   text-align: center;
-  font-size: 0.8rem;
+  font-size: 0.76rem;
 }
 .tourn-name {
   font-weight: 600;
@@ -327,11 +437,11 @@ html, body {
   display: inline-block;
   background: var(--pga-blue);
   color: var(--white);
-  font-size: 0.5rem;
+  font-size: 0.45rem;
   font-weight: 700;
-  padding: 0.1rem 0.3rem;
+  padding: 0.08rem 0.25rem;
   border-radius: 3px;
-  margin-left: 0.3rem;
+  margin-left: 0.25rem;
   vertical-align: middle;
   letter-spacing: 0.04em;
 }
@@ -341,18 +451,152 @@ html, body {
   color: var(--pga-dark);
 }
 .tourn-score.under-par { color: var(--red); }
-.tourn-today { text-align: center; color: var(--text-light); font-size: 0.72rem; }
-.tourn-thru { text-align: center; color: var(--text-light); font-size: 0.72rem; }
+.tourn-today { text-align: center; color: var(--text-light); font-size: 0.7rem; }
+.tourn-thru { text-align: center; color: var(--text-light); font-size: 0.7rem; }
 
 .tourn-table tbody tr.mc-row td { color: #999; }
 .tourn-table tbody tr.mc-row .tourn-pos { color: var(--red); }
+
+/* ========== NEWS TICKER ========== */
+.ticker-bar {
+  grid-column: 1 / 3;
+  height: 36px;
+  background: linear-gradient(90deg, var(--pga-blue), var(--pga-dark), var(--pga-blue));
+  border-top: 1px solid var(--gold);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.ticker-label {
+  flex-shrink: 0;
+  background: var(--gold);
+  color: var(--pga-deeper);
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.8rem;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+.ticker-content {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  height: 100%;
+}
+.ticker-scroll {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+  height: 100%;
+  animation: tickerScroll linear infinite;
+  white-space: nowrap;
+  will-change: transform;
+}
+.ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.85);
+  flex-shrink: 0;
+}
+.ticker-item .ticker-icon {
+  font-size: 0.75rem;
+}
+.ticker-item .ticker-highlight {
+  color: var(--gold);
+  font-weight: 700;
+}
+.ticker-item .ticker-news {
+  color: rgba(255,255,255,0.6);
+  font-style: italic;
+}
+.ticker-dot {
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--gold);
+  opacity: 0.4;
+  flex-shrink: 0;
+}
+@keyframes tickerScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ========== LEAD CHANGE ALERT ========== */
+.lead-change-flash {
+  position: fixed;
+  top: 48px;
+  left: 0;
+  right: 0;
+  height: 0;
+  background: linear-gradient(90deg, transparent, rgba(212,168,67,0.5), transparent);
+  z-index: 50;
+  pointer-events: none;
+  transition: height 0.15s ease;
+}
+.lead-change-flash.active {
+  height: 4px;
+  animation: flashPulse 2s ease-out forwards;
+}
+@keyframes flashPulse {
+  0% { opacity: 1; height: 4px; }
+  15% { height: 6px; }
+  30% { height: 3px; }
+  100% { opacity: 0; height: 0; }
+}
+
+.lead-change-banner {
+  position: fixed;
+  top: 58px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  background: linear-gradient(135deg, var(--pga-deeper), var(--pga-dark));
+  border: 2px solid var(--gold);
+  border-radius: 12px;
+  padding: 0.6rem 1.5rem;
+  z-index: 51;
+  opacity: 0;
+  pointer-events: none;
+  text-align: center;
+  box-shadow: 0 4px 30px rgba(212,168,67,0.3);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.lead-change-banner.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+.lead-change-banner .lcb-label {
+  font-size: 0.5rem;
+  color: var(--gold);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.lead-change-banner .lcb-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: var(--gold);
+  text-shadow: 0 1px 8px rgba(212,168,67,0.3);
+}
+.lead-change-banner .lcb-detail {
+  font-size: 0.6rem;
+  color: rgba(255,255,255,0.6);
+  margin-top: 0.15rem;
+}
 
 /* ========== CHAMPION OVERLAY ========== */
 .champion-overlay {
   display: none;
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,26,16,0.92);
+  background: rgba(0,13,43,0.92);
   z-index: 100;
   align-items: center;
   justify-content: center;
@@ -365,6 +609,11 @@ html, body {
   border-radius: 20px;
   padding: 3rem 4rem;
   box-shadow: 0 0 80px rgba(200,169,81,0.2);
+  animation: championPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes championPop {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
 }
 .champion-card .trophy { font-size: 4rem; margin-bottom: 0.5rem; }
 .champion-card .ch-label {
@@ -414,7 +663,7 @@ html, body {
 <div class="top-bar">
   <div class="top-bar-left">
     <h1>The PGA Championship Pool</h1>
-    <span class="event-info">Aronimink Golf Club &bull; May 14–17, 2026</span>
+    <span class="event-info">Aronimink Golf Club &bull; May 14&ndash;17, 2026</span>
   </div>
   <div class="top-bar-right">
     <div class="status-badge live" id="statusBadge">
@@ -425,10 +674,10 @@ html, body {
   </div>
 </div>
 
-<!-- Main Split -->
+<!-- Main Grid -->
 <div class="main">
 
-  <!-- Left: Pool Standings -->
+  <!-- Top-Left: Pool Standings (prime view) -->
   <div class="panel-pool">
     <div class="panel-header">
       <h2>Pool Standings</h2>
@@ -439,7 +688,7 @@ html, body {
     </div>
   </div>
 
-  <!-- Right: Tournament Leaderboard -->
+  <!-- Right: Tournament Leaderboard (spans both rows) -->
   <div class="panel-tournament">
     <div class="panel-header">
       <h2 id="tournTitle">PGA Championship</h2>
@@ -450,6 +699,29 @@ html, body {
     </div>
   </div>
 
+  <!-- Bottom-Left: Grand Slam + Awards -->
+  <div class="bottom-left">
+    <div class="grand-slam" id="grandSlam"></div>
+  </div>
+
+</div>
+
+<!-- News Ticker -->
+<div class="ticker-bar">
+  <div class="ticker-label">Updates</div>
+  <div class="ticker-content">
+    <div class="ticker-scroll" id="tickerScroll">
+      <span class="ticker-item"><span class="ticker-icon">&#9971;</span> Loading tournament updates...</span>
+    </div>
+  </div>
+</div>
+
+<!-- Lead Change Alert -->
+<div class="lead-change-flash" id="leadFlash"></div>
+<div class="lead-change-banner" id="leadBanner">
+  <div class="lcb-label">&#9889; Lead Change</div>
+  <div class="lcb-name" id="lcbName"></div>
+  <div class="lcb-detail" id="lcbDetail"></div>
 </div>
 
 <!-- Champion Overlay -->
@@ -469,9 +741,32 @@ html, body {
 // CONFIG
 // ============================================================
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx39kPOIqYc6yZi-sK9dT2Ha-eVUq0G-BpYF4CTUoujevCgu_PujDS3SEIPSgbKziAz/exec';
-const DEADLINE = new Date('2026-05-15T04:00:00Z'); // Midnight ET May 14
+const DEADLINE = new Date('2026-05-15T04:00:00Z');
 const REFRESH_INTERVAL = 5 * 60 * 1000;
 const ESPN_GOLF_URL = 'https://site.api.espn.com/apis/site/v2/sports/golf/leaderboard';
+const ESPN_NEWS_URL = 'https://site.api.espn.com/apis/site/v2/sports/golf/news';
+
+// ============================================================
+// GRAND SLAM SEASON CONFIG
+// ============================================================
+const GRAND_SLAM = {
+  majors: [
+    { id: 'masters', label: 'MST', fullName: 'The Masters' },
+    { id: 'pga', label: 'PGA', fullName: 'PGA Championship' },
+    { id: 'usopen', label: 'USO', fullName: 'US Open' },
+    { id: 'open', label: 'OPN', fullName: 'The Open' }
+  ],
+  currentMajor: 'pga',
+  // Past results: each player's pool score per major (lower = better)
+  // null = didn't play that event
+  results: {
+    'Nick':    { masters: 42,   pga: null, usopen: null, open: null },
+    'Brandon': { masters: 58,   pga: null, usopen: null, open: null },
+    'Jason':   { masters: null,  pga: null, usopen: null, open: null },
+    'Mike':    { masters: 54,   pga: null, usopen: null, open: null }
+  },
+  mastersWinner: 'Nick'
+};
 
 function getPointsForPosition(pos) {
   if (pos <= 0) return 55;
@@ -491,9 +786,94 @@ const WD_POINTS = 55;
 
 let tournamentData = null;
 let isTournamentComplete = false;
+let previousStandings = {};
+let previousLeader = null;
+let espnNewsItems = [];
 
 // ============================================================
-// WAKE LOCK — keeps iPad awake
+// AUDIO — Lead Change Chime (Web Audio API, no external files)
+// ============================================================
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx = null;
+
+function playLeadChangeChime() {
+  try {
+    if (!audioCtx) audioCtx = new AudioCtx();
+    // Two-tone rising chime
+    const now = audioCtx.currentTime;
+
+    // First tone
+    const osc1 = audioCtx.createOscillator();
+    const gain1 = audioCtx.createGain();
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(587.33, now); // D5
+    gain1.gain.setValueAtTime(0.25, now);
+    gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+    osc1.connect(gain1);
+    gain1.connect(audioCtx.destination);
+    osc1.start(now);
+    osc1.stop(now + 0.5);
+
+    // Second tone (higher, slight delay)
+    const osc2 = audioCtx.createOscillator();
+    const gain2 = audioCtx.createGain();
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(880, now + 0.15); // A5
+    gain2.gain.setValueAtTime(0, now);
+    gain2.gain.setValueAtTime(0.3, now + 0.15);
+    gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
+    osc2.connect(gain2);
+    gain2.connect(audioCtx.destination);
+    osc2.start(now + 0.15);
+    osc2.stop(now + 0.8);
+
+    // Third tone (highest, for sparkle)
+    const osc3 = audioCtx.createOscillator();
+    const gain3 = audioCtx.createGain();
+    osc3.type = 'sine';
+    osc3.frequency.setValueAtTime(1174.66, now + 0.3); // D6
+    gain3.gain.setValueAtTime(0, now);
+    gain3.gain.setValueAtTime(0.15, now + 0.3);
+    gain3.gain.exponentialRampToValueAtTime(0.01, now + 1.0);
+    osc3.connect(gain3);
+    gain3.connect(audioCtx.destination);
+    osc3.start(now + 0.3);
+    osc3.stop(now + 1.0);
+  } catch (e) {
+    console.log('Audio chime failed:', e);
+  }
+}
+
+function showLeadChangeBanner(newLeader, points, prevLeader) {
+  const flash = document.getElementById('leadFlash');
+  const banner = document.getElementById('leadBanner');
+  const nameEl = document.getElementById('lcbName');
+  const detailEl = document.getElementById('lcbDetail');
+
+  nameEl.textContent = newLeader;
+  detailEl.textContent = prevLeader
+    ? `Takes the lead from ${prevLeader} with ${points} pts`
+    : `Leads with ${points} pts`;
+
+  // Flash bar
+  flash.classList.remove('active');
+  void flash.offsetWidth; // reflow
+  flash.classList.add('active');
+
+  // Banner slide in
+  banner.classList.add('visible');
+
+  // Play chime
+  playLeadChangeChime();
+
+  // Hide after 5 seconds
+  setTimeout(() => {
+    banner.classList.remove('visible');
+  }, 5000);
+}
+
+// ============================================================
+// WAKE LOCK
 // ============================================================
 let wakeLock = null;
 
@@ -503,50 +883,36 @@ async function requestWakeLock() {
       wakeLock = await navigator.wakeLock.request('screen');
       document.getElementById('wakeBadge').textContent = 'SCREEN: AWAKE';
       document.getElementById('wakeBadge').style.color = '#4ADE80';
-
       wakeLock.addEventListener('release', () => {
         document.getElementById('wakeBadge').textContent = 'SCREEN LOCK: OFF';
         document.getElementById('wakeBadge').style.color = 'rgba(255,255,255,0.3)';
       });
     }
-  } catch (err) {
-    console.log('Wake Lock not supported or failed:', err);
-  }
+  } catch (err) { console.log('Wake Lock failed:', err); }
 }
 
-// Re-acquire wake lock when page becomes visible again
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible') requestWakeLock();
 });
-
 requestWakeLock();
 
-// Also use a hidden video trick as fallback for older iPads
-function setupVideoWakeLock() {
+// Hidden video fallback for older iPads
+(function() {
   const video = document.createElement('video');
   video.setAttribute('playsinline', '');
   video.setAttribute('muted', '');
   video.setAttribute('loop', '');
-  video.style.position = 'fixed';
-  video.style.top = '-1px';
-  video.style.left = '-1px';
-  video.style.width = '1px';
-  video.style.height = '1px';
-  video.style.opacity = '0.01';
-
-  // Tiny transparent webm
+  Object.assign(video.style, { position: 'fixed', top: '-1px', left: '-1px', width: '1px', height: '1px', opacity: '0.01' });
   video.src = 'data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDEAAAAIZnJlZQAAAu1tZGF0AAACrQYF//+p3EXpvebZSLeWLNgg2SPu73gyNjQgLSBjb3JlIDE1MiByMjg1NCBlOWE1OTAzIC0gSC4yNjQvTVBFRy00IEFWQyBjb2RlYyAtIENvcHlsZWZ0IDIwMDMtMjAxNyAtIGh0dHA6Ly93d3cudmlkZW9sYW4ub3JnL3gyNjQuaHRtbCAtIG9wdGlvbnM6IGNhYmFjPTEgcmVmPTMgZGVibG9jaz0xOjA6MCBhbmFseXNlPTB4MzoweDExMyBtZT1oZXggc3VibWU9NyBwc3k9MSBwc3lfcmQ9MS4wMDowLjAwIG1peGVkX3JlZj0xIG1lX3JhbmdlPTE2IGNocm9tYV9tZT0xIHRyZWxsaXM9MSA4eDhkY3Q9MSBjcW09MCBkZWFkem9uZT0yMSwxMSBmYXN0X3Bza2lwPTEgY2hyb21hX3FwX29mZnNldD0tMiB0aHJlYWRzPTMgbG9va2FoZWFkX3RocmVhZHM9MSBzbGljZWRfdGhyZWFkcz0wIG5yPTAgZGVjaW1hdGU9MSBpbnRlcmxhY2VkPTAgYmx1cmF5X2NvbXBhdD0wIGNvbnN0cmFpbmVkX2ludHJhPTAgYmZyYW1lcz0zIGJfcHlyYW1pZD0yIGJfYWRhcHQ9MSBiX2JpYXM9MCBkaXJlY3Q9MSB3ZWlnaHRiPTEgb3Blbl9nb3A9MCB3ZWlnaHRwPTIga2V5aW50PTI1MCBrZXlpbnRfbWluPTI1IHNjZW5lY3V0PTQwIGludHJhX3JlZnJlc2g9MCByY19sb29rYWhlYWQ9NDAgcmM9Y3JmIG1idHJlZT0xIGNyZj0yMy4wIHFjb21wPTAuNjAgcXBtaW49MCBxcG1heD02OSBxcHN0ZXA9NCBpcF9yYXRpbz0xLjQwIGFxPTE6MS4wMACAAAAPZYiEBf//+97M2LFigniLIsV8mBEC0QAAAAMAAAMAAAMA';
   document.body.appendChild(video);
   video.play().catch(() => {});
-}
-setupVideoWakeLock();
+})();
 
 // ============================================================
 // CLOCK
 // ============================================================
 function updateClock() {
-  const now = new Date();
-  document.getElementById('clock').textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  document.getElementById('clock').textContent = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 }
 setInterval(updateClock, 1000);
 updateClock();
@@ -555,7 +921,7 @@ updateClock();
 // HELPERS
 // ============================================================
 function normalizeName(name) {
-  return name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z\s]/g, '').trim();
+  return name.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z\s]/g, '').trim();
 }
 
 // ============================================================
@@ -603,19 +969,27 @@ async function fetchESPNData() {
       if (st === 'STATUS_CUT' || status.period === 99) { playerStatus = 'MC'; posDisplay = 'MC'; }
       if (st === 'STATUS_WITHDRAWN' || st === 'STATUS_DISQUALIFIED') { playerStatus = 'WD'; posDisplay = 'WD'; }
 
-      // Total score to par — score.displayValue can lag mid-round, so prefer linescores
-      if (c.score) scoreToPar = c.score.displayValue || '--';
-
+      // Compute total score to par by summing ALL linescore rounds
       const ls = c.linescores || [];
       const curPeriod = status.period || 1;
       const curRound = ls.find(l => l.period === curPeriod && l.displayValue);
 
-      // Fix total: in round 1, linescore IS the tournament total (more reliable mid-round)
-      if (curRound && curPeriod === 1) {
-        scoreToPar = curRound.displayValue;
+      let computedTotal = 0;
+      let hasAnyScore = false;
+      for (const l of ls) {
+        if (l.displayValue) {
+          hasAnyScore = true;
+          if (l.displayValue !== 'E') {
+            computedTotal += parseInt(l.displayValue) || 0;
+          }
+        }
+      }
+      if (hasAnyScore) {
+        scoreToPar = computedTotal === 0 ? 'E' : (computedTotal > 0 ? '+' + computedTotal : String(computedTotal));
+      } else if (c.score) {
+        scoreToPar = c.score.displayValue || '--';
       }
 
-      // Today: show stroke total (67, 72) when round finished, relative-to-par (-3, E) when in progress
       if (curRound) {
         if (status.thru === 18) {
           today = curRound.value ? String(curRound.value) : curRound.displayValue;
@@ -631,14 +1005,19 @@ async function fetchESPNData() {
         position: posNum,
         posDisplay,
         scoreToPar,
+        scoreNum: computedTotal,
         today,
         thru,
         status: playerStatus
       });
     }
 
-    // Sort by position
-    competitors.sort((a, b) => a.position - b.position);
+    competitors.sort((a, b) => {
+      if (a.status === 'MC' || a.status === 'WD') return 1;
+      if (b.status === 'MC' || b.status === 'WD') return -1;
+      if (a.scoreNum !== b.scoreNum) return a.scoreNum - b.scoreNum;
+      return a.position - b.position;
+    });
 
     const eventStatus = ev.status?.type?.name || '';
     return {
@@ -651,6 +1030,23 @@ async function fetchESPNData() {
   } catch (err) {
     console.error('ESPN fetch failed:', err);
     return null;
+  }
+}
+
+// ============================================================
+// FETCH ESPN NEWS
+// ============================================================
+async function fetchESPNNews() {
+  try {
+    const resp = await fetch(ESPN_NEWS_URL);
+    const data = await resp.json();
+    const articles = data.articles || [];
+    espnNewsItems = articles.slice(0, 8).map(a => {
+      const headline = a.headline || a.title || '';
+      return headline;
+    }).filter(h => h.length > 0);
+  } catch (err) {
+    console.log('ESPN news fetch failed:', err);
   }
 }
 
@@ -716,14 +1112,218 @@ function calculateStandings(entries) {
 }
 
 // ============================================================
+// GRAND SLAM TRACKER (now in bottom-left)
+// ============================================================
+function renderGrandSlam(currentStandings) {
+  const el = document.getElementById('grandSlam');
+  const gs = GRAND_SLAM;
+
+  const players = {};
+  for (const [name, results] of Object.entries(gs.results)) {
+    players[name] = { ...results };
+  }
+
+  if (currentStandings) {
+    for (const s of currentStandings) {
+      if (players[s.name]) {
+        players[s.name].pga = s.totalPoints;
+      } else {
+        players[s.name] = { masters: null, pga: s.totalPoints, usopen: null, open: null };
+      }
+    }
+  }
+
+  const gsStandings = Object.entries(players).map(([name, scores]) => {
+    let total = 0;
+    let majorsPlayed = 0;
+    for (const m of gs.majors) {
+      if (scores[m.id] !== null && scores[m.id] !== undefined) {
+        total += scores[m.id];
+        majorsPlayed++;
+      }
+    }
+    return { name, scores, total, majorsPlayed };
+  });
+
+  gsStandings.sort((a, b) => {
+    if (a.majorsPlayed !== b.majorsPlayed) return b.majorsPlayed - a.majorsPlayed;
+    return a.total - b.total;
+  });
+
+  const majorHeaders = gs.majors.map(m => {
+    const cls = m.id === gs.currentMajor ? 'active' : (gsStandings.some(s => s.scores[m.id] !== null && s.scores[m.id] !== undefined && m.id !== gs.currentMajor) ? 'won' : 'future');
+    return `<span class="gs-major ${cls}" title="${m.fullName}">${m.label}</span>`;
+  }).join('');
+
+  let rows = gsStandings.map((s, i) => {
+    const rankCls = i === 0 ? 'g1' : i === 1 ? 'g2' : i === 2 ? 'g3' : 'gn';
+    const isLeader = i === 0;
+
+    const majorCells = gs.majors.map(m => {
+      const score = s.scores[m.id];
+      const isCurrent = m.id === gs.currentMajor;
+      let cls, display;
+      if (score !== null && score !== undefined) {
+        cls = isCurrent ? 'active' : 'won';
+        display = score;
+        if (m.id === 'masters' && s.name === gs.mastersWinner) {
+          display = '&#127942; ' + display;
+        }
+      } else {
+        // Check if the major is in the past (before current) — means DNP
+        const majorIdx = gs.majors.findIndex(maj => maj.id === m.id);
+        const currentIdx = gs.majors.findIndex(maj => maj.id === gs.currentMajor);
+        if (majorIdx < currentIdx) {
+          cls = 'dnp';
+          display = 'DNP';
+        } else if (isCurrent) {
+          cls = 'active';
+          display = '—';
+        } else {
+          cls = 'future';
+          display = '—';
+        }
+      }
+      return `<span class="gs-major ${cls}">${display}</span>`;
+    }).join('');
+
+    return `
+      <div class="gs-row${isLeader ? ' gs-leader' : ''}">
+        <span class="gs-rank ${rankCls}">${i + 1}</span>
+        <span class="gs-name">${s.name}</span>
+        <span class="gs-majors">${majorCells}</span>
+        <span class="gs-total">${s.total}</span>
+      </div>
+    `;
+  }).join('');
+
+  el.innerHTML = `
+    <div class="gs-header">
+      <span class="gs-trophy">&#127942;</span>
+      <h3>Grand Slam Season</h3>
+      <span class="gs-trophy">&#127942;</span>
+    </div>
+    <div class="gs-standings">
+      <div class="gs-row" style="opacity:0.5; padding-bottom:0;">
+        <span style="width:18px"></span>
+        <span class="gs-name" style="font-size:0.5rem;color:rgba(255,255,255,0.3);letter-spacing:0.08em;text-transform:uppercase;">Player</span>
+        <span class="gs-majors">${majorHeaders}</span>
+        <span class="gs-total" style="font-size:0.5rem;color:rgba(255,255,255,0.3);">TOT</span>
+      </div>
+      ${rows}
+    </div>
+  `;
+}
+
+// ============================================================
+// NEWS TICKER (pool updates + real ESPN news)
+// ============================================================
+function generateTickerItems(standings) {
+  const items = [];
+
+  // Tournament leader
+  if (tournamentData && tournamentData.competitors.length > 0) {
+    const leader = tournamentData.competitors[0];
+    items.push({ icon: '&#127942;', text: `Tournament Leader: <span class="ticker-highlight">${leader.name}</span> (${leader.scoreToPar}) thru ${leader.thru}` });
+  }
+
+  // Pool standings updates
+  if (standings && standings.length > 0) {
+    items.push({ icon: '&#127941;', text: `Pool Leader: <span class="ticker-highlight">${standings[0].name}</span> with ${standings[0].totalPoints} pts` });
+
+    if (standings.length > 1) {
+      const gap = standings[1].totalPoints - standings[0].totalPoints;
+      if (gap === 0) {
+        items.push({ icon: '&#9889;', text: `It's a tie! <span class="ticker-highlight">${standings[0].name}</span> and <span class="ticker-highlight">${standings[1].name}</span> both at ${standings[0].totalPoints} pts` });
+      } else {
+        items.push({ icon: '&#128200;', text: `${standings[0].name} leads ${standings[1].name} by <span class="ticker-highlight">${gap} points</span>` });
+      }
+    }
+  }
+
+  // Best performing golfers from pool picks
+  if (standings) {
+    const allGolfers = [];
+    standings.forEach(s => {
+      s.golfers.forEach(g => {
+        if (g.counting && g.status !== 'MC' && g.status !== 'WD' && g.posDisplay !== 'N/A') {
+          allGolfers.push({ name: g.name, points: g.points, pos: g.posDisplay, owner: s.name });
+        }
+      });
+    });
+    allGolfers.sort((a, b) => a.points - b.points);
+    if (allGolfers.length > 0) {
+      const best = allGolfers[0];
+      items.push({ icon: '&#128293;', text: `Hot Pick: <span class="ticker-highlight">${best.name}</span> (${best.pos}) earning ${best.points} pts for ${best.owner}` });
+    }
+    if (allGolfers.length > 2) {
+      const worst = allGolfers[allGolfers.length - 1];
+      items.push({ icon: '&#128556;', text: `Struggling: ${worst.name} (${worst.pos}) costing ${worst.owner} ${worst.points} pts` });
+    }
+  }
+
+  // Top 5 leaderboard summary
+  if (tournamentData && tournamentData.competitors.length >= 5) {
+    const top5 = tournamentData.competitors.slice(0, 5).map(c => c.name.split(' ').pop()).join(', ');
+    items.push({ icon: '&#9971;', text: `Top 5: <span class="ticker-highlight">${top5}</span>` });
+  }
+
+  // Round info
+  if (tournamentData) {
+    const round = tournamentData.round;
+    const roundNames = { 1: 'Thursday', 2: 'Friday', 3: 'Saturday (Moving Day)', 4: 'Championship Sunday' };
+    items.push({ icon: '&#128197;', text: `Round ${round} ${roundNames[round] ? '— ' + roundNames[round] : ''} at Aronimink Golf Club` });
+  }
+
+  // Grand Slam note
+  if (GRAND_SLAM.mastersWinner) {
+    items.push({ icon: '&#127811;', text: `Masters Champion: <span class="ticker-highlight">${GRAND_SLAM.mastersWinner}</span> — Can he make it 2 for 2?` });
+  }
+
+  // Movement notes
+  if (standings && Object.keys(previousStandings).length > 0) {
+    for (const s of standings) {
+      const prev = previousStandings[s.name];
+      if (prev && prev > s.rank) {
+        items.push({ icon: '&#128640;', text: `<span class="ticker-highlight">${s.name}</span> moves up from #${prev} to #${s.rank}!` });
+      }
+    }
+  }
+
+  // === ESPN GOLF NEWS ===
+  if (espnNewsItems.length > 0) {
+    for (const headline of espnNewsItems) {
+      items.push({ icon: '&#128240;', text: `<span class="ticker-news">${headline}</span>`, isNews: true });
+    }
+  }
+
+  return items;
+}
+
+function renderTicker(standings) {
+  const items = generateTickerItems(standings);
+  if (items.length === 0) return;
+
+  const allItems = [...items, ...items];
+  const html = allItems.map((item, i) => {
+    return `<span class="ticker-item"><span class="ticker-icon">${item.icon}</span> ${item.text}</span>` +
+      (i < allItems.length - 1 ? '<span class="ticker-dot"></span>' : '');
+  }).join('');
+
+  const scrollEl = document.getElementById('tickerScroll');
+  scrollEl.innerHTML = html;
+
+  const duration = Math.max(items.length * 6, 40);
+  scrollEl.style.animationDuration = duration + 's';
+}
+
+// ============================================================
 // RENDER — POOL
 // ============================================================
 function renderPool(standings) {
   const el = document.getElementById('poolList');
 
-  // Collect all pool golfer names for highlighting on tournament side
   window.poolGolferNames = new Set();
-  // Map golfer name -> who picked them
   window.poolGolferOwners = {};
   standings.forEach(s => {
     s.golfers.forEach(g => {
@@ -738,7 +1338,6 @@ function renderPool(standings) {
     const rankClass = entry.rank <= 3 ? 'r' + entry.rank : 'rn';
     const isLeader = entry.rank === 1;
 
-    // Sort golfers: counting first
     const counting = entry.golfers.filter(g => g.counting).sort((a, b) => a.points - b.points);
     const notCounting = entry.golfers.filter(g => !g.counting).sort((a, b) => a.points - b.points);
     const ordered = [...counting, ...notCounting];
@@ -766,6 +1365,18 @@ function renderPool(standings) {
       </div>
     `;
   }).join('');
+
+  // Check for lead change
+  if (standings.length > 0) {
+    const currentLeader = standings[0].name;
+    if (previousLeader !== null && previousLeader !== currentLeader) {
+      showLeadChangeBanner(currentLeader, standings[0].totalPoints, previousLeader);
+    }
+    previousLeader = currentLeader;
+  }
+
+  // Save standings for movement tracking
+  standings.forEach(s => { previousStandings[s.name] = s.rank; });
 }
 
 // ============================================================
@@ -792,9 +1403,9 @@ function renderTournament() {
     const owners = poolOwners[normalized] || [];
     const ownerBadge = isPoolPick ? owners.map(o => `<span class="pick-badge">${o}</span>`).join(' ') : '';
 
-    const scoreClass = c.scoreToPar !== '--' && c.scoreToPar.startsWith('-') ? ' under-par' : '';
+    const scoreClass = c.scoreToPar !== '--' && String(c.scoreToPar).startsWith('-') ? ' under-par' : '';
 
-    rows += `<tr class="${isMC || isWD ? 'mc-row' : ''}">
+    rows += `<tr class="${isMC || isWD ? 'mc-row' : ''}${isPoolPick ? ' pool-pick-row' : ''}">
       <td class="tourn-pos">${c.posDisplay}</td>
       <td class="tourn-name${isPoolPick ? ' pool-pick' : ''}">${c.name}${ownerBadge}</td>
       <td class="tourn-score${scoreClass}">${c.scoreToPar}</td>
@@ -829,11 +1440,7 @@ function showChampion(standings) {
   document.getElementById('chScore').textContent = `${w.totalPoints} points`;
   document.getElementById('championOverlay').classList.add('visible');
   launchConfetti();
-
-  // Auto-dismiss after 15 seconds
-  setTimeout(() => {
-    document.getElementById('championOverlay').classList.remove('visible');
-  }, 15000);
+  setTimeout(() => { document.getElementById('championOverlay').classList.remove('visible'); }, 15000);
 }
 
 function launchConfetti() {
@@ -841,7 +1448,7 @@ function launchConfetti() {
   const ctx = canvas.getContext('2d');
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
-  const colors = ['#C8A951', '#006747', '#E8D48B', '#FFFFFF', '#004D35', '#FFD700'];
+  const colors = ['#D4A843', '#00205B', '#E8D48B', '#FFFFFF', '#001A4D', '#FFD700'];
   const particles = [];
   for (let i = 0; i < 200; i++) {
     particles.push({
@@ -880,8 +1487,11 @@ function launchConfetti() {
 // REFRESH
 // ============================================================
 async function refresh() {
-  const poolData = await fetchPoolEntries();
-  tournamentData = await fetchESPNData();
+  const [poolData, _, __] = await Promise.all([
+    fetchPoolEntries(),
+    fetchESPNData().then(d => { tournamentData = d; }),
+    fetchESPNNews()
+  ]);
 
   // Update status
   if (tournamentData) {
@@ -894,6 +1504,8 @@ async function refresh() {
     const standings = calculateStandings(poolData.entries);
     renderPool(standings);
     renderTournament();
+    renderGrandSlam(standings);
+    renderTicker(standings);
 
     if (tournamentData && tournamentData.isComplete && !isTournamentComplete) {
       isTournamentComplete = true;
@@ -901,6 +1513,9 @@ async function refresh() {
     }
   } else if (tournamentData) {
     renderTournament();
+    renderGrandSlam(null);
+    renderAwards(null);
+    renderTicker(null);
     document.getElementById('poolList').innerHTML = '<div class="loading-center">Picks locked at tee-off</div>';
   }
 }
