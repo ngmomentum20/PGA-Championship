@@ -34,6 +34,7 @@ html, body {
   overflow: hidden;
   -webkit-user-select: none;
   user-select: none;
+  -webkit-text-size-adjust: 100%;
 }
 
 /* ========== TOP BAR ========== */
@@ -654,6 +655,133 @@ html, body {
   width: 100%; height: 100%;
   pointer-events: none;
   z-index: 101;
+}
+/* ========== MOBILE — STACKED LAYOUT ========== */
+@media (max-width: 768px) {
+  html, body {
+    height: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Top bar: compact */
+  .top-bar {
+    height: 40px;
+    padding: 0.35rem 0.75rem;
+  }
+  .top-bar h1 { font-size: 0.95rem; }
+  .top-bar .event-info { display: none; }
+  .wake-badge { display: none; }
+  .clock { font-size: 0.6rem; }
+  .status-badge { font-size: 0.6rem; }
+
+  /* Main: single column, scrollable */
+  .main {
+    display: flex;
+    flex-direction: column;
+    height: auto !important;
+    min-height: auto;
+  }
+
+  /* Pool panel: full width, no fixed height */
+  .panel-pool {
+    width: 100%;
+    border-right: none;
+    border-bottom: 2px solid var(--gold);
+    order: 1;
+  }
+  .panel-header { padding: 0.4rem 0.75rem; }
+  .panel-header h2 { font-size: 0.85rem; }
+
+  .pool-list {
+    max-height: none;
+    overflow-y: visible;
+    padding: 0 0.4rem 0.4rem;
+  }
+
+  .pool-entry { margin-bottom: 0.35rem; }
+  .pool-entry-header { padding: 0.4rem 0.55rem; gap: 0.4rem; }
+  .pool-rank { width: 26px; height: 26px; font-size: 0.75rem; }
+  .pool-name { font-size: 0.82rem; }
+  .pool-pts { font-size: 1.05rem; }
+
+  .pool-golfers { padding: 0 0.55rem 0.35rem; gap: 0.2rem; }
+  .golfer-chip { font-size: 0.54rem; padding: 0.15rem 0.35rem; }
+  .chip-pos { font-size: 0.5rem; }
+  .chip-pts { font-size: 0.45rem; }
+  .chip-dot { width: 4px; height: 4px; }
+
+  /* Bottom-left (Grand Slam): full width, below pool */
+  .bottom-left {
+    width: 100%;
+    border-right: none;
+    border-top: none;
+    border-bottom: 2px solid var(--gold);
+    max-height: none;
+    order: 2;
+  }
+  .grand-slam { padding: 0.4rem 0.6rem; }
+  .gs-header h3 { font-size: 0.6rem; }
+  .gs-row { font-size: 0.6rem; padding: 0.15rem 0.3rem; gap: 0.35rem; }
+  .gs-rank { width: 16px; height: 16px; font-size: 0.45rem; }
+  .gs-major { width: 30px; font-size: 0.5rem; }
+  .gs-total { width: 30px; font-size: 0.6rem; }
+
+  /* Tournament: full width, scrollable */
+  .panel-tournament {
+    width: 100%;
+    order: 3;
+    min-height: 50vh;
+  }
+  .panel-tournament .panel-header {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+  }
+
+  .tourn-list {
+    overflow-y: visible;
+  }
+  .tourn-table { font-size: 0.7rem; }
+  .tourn-table th { font-size: 0.5rem; padding: 0.3rem 0.35rem; }
+  .tourn-table td { padding: 0.25rem 0.35rem; }
+  .tourn-pos { font-size: 0.7rem; }
+  .tourn-name { max-width: 120px; font-size: 0.68rem; }
+  .tourn-name .pick-badge { font-size: 0.4rem; padding: 0.06rem 0.2rem; }
+  .tourn-today { font-size: 0.62rem; }
+  .tourn-thru { font-size: 0.62rem; }
+
+  /* Ticker: compact, fixed at bottom */
+  .ticker-bar {
+    position: sticky;
+    bottom: 0;
+    height: 32px;
+    z-index: 10;
+  }
+  .ticker-label { font-size: 0.5rem; padding: 0.25rem 0.5rem; }
+  .ticker-item { font-size: 0.58rem; }
+
+  /* Lead change banner: mobile sizing */
+  .lead-change-banner {
+    top: 48px;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    width: 85%;
+    left: 50%;
+  }
+  .lead-change-banner .lcb-name { font-size: 1rem; }
+  .lead-change-banner .lcb-detail { font-size: 0.5rem; }
+}
+
+/* Extra small phones (iPhone SE, etc) */
+@media (max-width: 375px) {
+  .top-bar h1 { font-size: 0.8rem; }
+  .pool-name { font-size: 0.75rem; }
+  .pool-pts { font-size: 0.95rem; }
+  .golfer-chip { font-size: 0.48rem; padding: 0.12rem 0.3rem; }
+  .tourn-name { max-width: 100px; }
+  .gs-major { width: 26px; font-size: 0.45rem; }
 }
 </style>
 </head>
