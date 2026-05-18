@@ -492,13 +492,119 @@ body {
 .golfer-mc { color: var(--red); }
 .golfer-wd { color: #999; }
 
-/* Tiebreaker footer */
+/* Tiebreaker footer (normal, non-tie) */
 .card-tiebreakers {
   background: var(--cream);
   padding: 0.5rem 1.25rem;
   font-size: 0.72rem;
   color: var(--text-light);
   border-top: 1px solid #E0E8D8;
+}
+
+/* ========== TIEBREAKER COMPARISON (shown when tied) ========== */
+.tie-banner {
+  background: linear-gradient(135deg, #FFF8E7, #FFF3D0);
+  border: 2px solid var(--gold);
+  border-radius: 12px;
+  margin: 0.5rem 0;
+  overflow: hidden;
+  animation: tiePulse 3s ease-in-out infinite;
+}
+@keyframes tiePulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(212,168,67,0.15); }
+  50% { box-shadow: 0 0 20px rgba(212,168,67,0.3); }
+}
+.tie-banner-header {
+  background: var(--pga-dark);
+  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+.tie-banner-header h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.85rem;
+  color: var(--gold);
+  letter-spacing: 0.08em;
+}
+.tie-banner-header .tie-icon { font-size: 1rem; }
+.tie-banner-body {
+  padding: 0.75rem 1rem;
+}
+.tie-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.75rem;
+}
+.tie-table th {
+  text-align: left;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.3rem 0.5rem;
+  border-bottom: 2px solid var(--gold);
+  white-space: nowrap;
+}
+.tie-table th:first-child { width: 30%; }
+.tie-table td {
+  padding: 0.35rem 0.5rem;
+  border-bottom: 1px solid #E8DFC0;
+  color: var(--text);
+  vertical-align: middle;
+}
+.tie-table tbody tr:last-child td { border-bottom: none; }
+.tie-table .tb-label {
+  font-weight: 600;
+  color: var(--text-light);
+  font-size: 0.68rem;
+}
+.tie-table .tb-label .tb-desc {
+  display: block;
+  font-weight: 400;
+  font-size: 0.58rem;
+  color: #999;
+  margin-top: 1px;
+}
+.tie-table .tb-value {
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.78rem;
+}
+.tie-table .tb-value.winner {
+  color: var(--green);
+  background: rgba(46,204,113,0.08);
+  border-radius: 4px;
+}
+.tie-table .tb-value.loser {
+  color: var(--red);
+  opacity: 0.7;
+}
+.tie-table .tb-actual {
+  text-align: center;
+  font-weight: 700;
+  color: var(--pga-blue);
+  font-size: 0.78rem;
+  background: rgba(0,32,91,0.04);
+  border-radius: 4px;
+}
+.tie-result {
+  text-align: center;
+  padding: 0.5rem;
+  font-size: 0.72rem;
+  color: var(--text-light);
+  border-top: 1px solid #E8DFC0;
+  margin-top: 0.3rem;
+}
+.tie-result strong {
+  color: var(--pga-dark);
+  font-size: 0.8rem;
+}
+.tie-result .tie-pending {
+  color: var(--gold);
+  font-style: italic;
 }
 
 /* ========== SCORING KEY ========== */
@@ -796,16 +902,25 @@ async function fetchESPNData() {
         posDisplay = 'WD';
       }
 
-      // Total score to par — score.displayValue can lag mid-round, so prefer linescores
-      if (comp.score) scoreToPar = comp.score.displayValue || '--';
-
+      // Compute total score to par by summing ALL linescore rounds (completed + in-progress)
       const linescores = comp.linescores || [];
       const currentPeriod = status.period || 1;
       const currentRoundScore = linescores.find(ls => ls.period === currentPeriod && ls.displayValue);
 
-      // Fix total: in round 1, linescore IS the tournament total (more reliable mid-round)
-      if (currentRoundScore && currentPeriod === 1) {
-        scoreToPar = currentRoundScore.displayValue;
+      let computedTotal = 0;
+      let hasAnyScore = false;
+      for (const l of linescores) {
+        if (l.displayValue) {
+          hasAnyScore = true;
+          if (l.displayValue !== 'E') {
+            computedTotal += parseInt(l.displayValue) || 0;
+          }
+        }
+      }
+      if (hasAnyScore) {
+        scoreToPar = computedTotal === 0 ? 'E' : (computedTotal > 0 ? '+' + computedTotal : String(computedTotal));
+      } else if (comp.score) {
+        scoreToPar = comp.score.displayValue || '--';
       }
 
       // Today: show stroke total (67, 72) when round finished, relative-to-par (-3, E) when in progress
@@ -925,7 +1040,171 @@ function calculateStandings(entries) {
     rank = i + 2;
   });
 
+  // Mark tied entries
+  standings.forEach(s => {
+    s.isTied = standings.filter(x => x.totalPoints === s.totalPoints).length >= 2;
+  });
+
   return standings;
+}
+
+// ============================================================
+// Tiebreaker Comparison
+// ============================================================
+function getActualTiebreakerResults() {
+  if (!tournamentData || !tournamentData.competitors || tournamentData.competitors.length === 0) {
+    return { score: null, playoff: null, leader: null };
+  }
+  const winner = tournamentData.competitors[0];
+  const actualScore = winner.scoreToPar !== '--' ? winner.scoreToPar : null;
+
+  // Determine if there's a playoff: check if top 2 have same score
+  let playoff = null;
+  if (tournamentData.isComplete && tournamentData.competitors.length >= 2) {
+    playoff = tournamentData.competitors[0].scoreNum === tournamentData.competitors[1].scoreNum ? 'Yes' : 'No';
+  }
+
+  // Saturday leader: we can't determine this from live data easily,
+  // so we'll show it as TBD unless the tournament is complete
+  // (would need R3 historical data). Leave as null for now.
+  return { score: actualScore, playoff: playoff, leader: null };
+}
+
+function buildTieComparisonHTML(tiedEntries) {
+  const actual = getActualTiebreakerResults();
+  const names = tiedEntries.map(e => e.name);
+  const pts = tiedEntries[0].totalPoints;
+
+  // Build columns: one per tied player
+  const playerCols = tiedEntries.map(e => {
+    const tb = e.tiebreakers || {};
+    return {
+      name: e.name,
+      score: tb.score !== undefined && tb.score !== '' ? tb.score : '—',
+      playoff: tb.playoff || '—',
+      leader: tb.leader || '—'
+    };
+  });
+
+  // Determine tiebreaker winners for each criterion
+  // TB1: Winning score — closest to actual
+  let tb1Winners = [];
+  if (actual.score !== null) {
+    const actualNum = actual.score === 'E' ? 0 : parseInt(actual.score);
+    let bestDiff = Infinity;
+    playerCols.forEach(p => {
+      if (p.score === '—') return;
+      const diff = Math.abs(parseInt(p.score) - actualNum);
+      if (diff < bestDiff) { bestDiff = diff; tb1Winners = [p.name]; }
+      else if (diff === bestDiff) { tb1Winners.push(p.name); }
+    });
+  }
+
+  // TB2: Playoff prediction — correct answer wins
+  let tb2Winners = [];
+  if (actual.playoff !== null) {
+    playerCols.forEach(p => {
+      if (p.playoff !== '—' && p.playoff.toLowerCase() === actual.playoff.toLowerCase()) {
+        tb2Winners.push(p.name);
+      }
+    });
+  }
+
+  // TB3: Saturday leader — exact match wins
+  let tb3Winners = [];
+  if (actual.leader !== null) {
+    const actualLeaderNorm = actual.leader.toLowerCase().trim();
+    playerCols.forEach(p => {
+      if (p.leader !== '—' && p.leader.toLowerCase().trim() === actualLeaderNorm) {
+        tb3Winners.push(p.name);
+      }
+    });
+  }
+
+  // Overall tiebreaker winner
+  let overallWinner = null;
+  if (tb1Winners.length === 1) {
+    overallWinner = tb1Winners[0];
+  } else if (tb1Winners.length > 1 || (tb1Winners.length === 0 && actual.score !== null)) {
+    // TB1 didn't resolve — go to TB2
+    const tb1Pool = tb1Winners.length > 0 ? tb1Winners : names;
+    const tb2Filtered = tb2Winners.filter(n => tb1Pool.includes(n));
+    if (tb2Filtered.length === 1) {
+      overallWinner = tb2Filtered[0];
+    } else {
+      // TB2 didn't resolve — go to TB3
+      const tb2Pool = tb2Filtered.length > 0 ? tb2Filtered : tb1Pool;
+      const tb3Filtered = tb3Winners.filter(n => tb2Pool.includes(n));
+      if (tb3Filtered.length === 1) {
+        overallWinner = tb3Filtered[0];
+      }
+    }
+  }
+
+  const isTournamentDone = tournamentData && tournamentData.isComplete;
+
+  let headerCols = playerCols.map(p => `<th style="text-align:center;">${p.name}</th>`).join('');
+
+  // Build rows
+  function cellClass(name, winners) {
+    if (winners.length === 0) return 'tb-value';
+    return winners.includes(name) ? 'tb-value winner' : 'tb-value loser';
+  }
+
+  let row1Cells = playerCols.map(p => `<td class="${cellClass(p.name, tb1Winners)}">${p.score}</td>`).join('');
+  let row2Cells = playerCols.map(p => `<td class="${cellClass(p.name, tb2Winners)}">${p.playoff}</td>`).join('');
+  let row3Cells = playerCols.map(p => `<td class="${cellClass(p.name, tb3Winners)}">${p.leader}</td>`).join('');
+
+  const actualScoreDisplay = actual.score !== null ? actual.score : (isTournamentDone ? '—' : 'In progress');
+  const actualPlayoffDisplay = actual.playoff !== null ? actual.playoff : (isTournamentDone ? '—' : 'TBD');
+  const actualLeaderDisplay = actual.leader !== null ? actual.leader : 'TBD';
+
+  let resultHTML = '';
+  if (isTournamentDone && overallWinner) {
+    resultHTML = `<div class="tie-result"><strong>&#127942; ${overallWinner} wins the tiebreaker!</strong></div>`;
+  } else if (isTournamentDone && !overallWinner) {
+    resultHTML = `<div class="tie-result"><strong>Tiebreakers exhausted — it's a dead heat!</strong></div>`;
+  } else {
+    resultHTML = `<div class="tie-result"><span class="tie-pending">Tiebreakers will be resolved when the tournament is final</span></div>`;
+  }
+
+  return `
+    <div class="tie-banner">
+      <div class="tie-banner-header">
+        <span class="tie-icon">&#9889;</span>
+        <h3>Tiebreaker — ${names.join(' vs ')} (${pts} pts each)</h3>
+      </div>
+      <div class="tie-banner-body">
+        <table class="tie-table">
+          <thead>
+            <tr>
+              <th>Tiebreaker</th>
+              ${headerCols}
+              <th style="text-align:center;">Actual</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="tb-label">1. Winning Score<span class="tb-desc">Closest to actual wins</span></td>
+              ${row1Cells}
+              <td class="tb-actual">${actualScoreDisplay}</td>
+            </tr>
+            <tr>
+              <td class="tb-label">2. Playoff?<span class="tb-desc">Correct answer wins</span></td>
+              ${row2Cells}
+              <td class="tb-actual">${actualPlayoffDisplay}</td>
+            </tr>
+            <tr>
+              <td class="tb-label">3. Sat. Leader<span class="tb-desc">Correct pick wins</span></td>
+              ${row3Cells}
+              <td class="tb-actual">${actualLeaderDisplay}</td>
+            </tr>
+          </tbody>
+        </table>
+        ${resultHTML}
+      </div>
+    </div>
+  `;
 }
 
 // ============================================================
@@ -1018,9 +1297,9 @@ function renderLeaderboard(standings) {
         `).join('')}
         </div>
         ${entry.tiebreakers && (entry.tiebreakers.score || entry.tiebreakers.playoff || entry.tiebreakers.leader) ? `
-          <div class="card-tiebreakers">
-            <strong>Tiebreakers:</strong>
-            ${entry.tiebreakers.score ? ' Score: ' + entry.tiebreakers.score : ''}
+          <div class="card-tiebreakers"${entry.isTied ? ' style="background:#FFF8E7;border-top:2px solid var(--gold);font-weight:600;"' : ''}>
+            ${entry.isTied ? '<strong>&#9889; Tiebreaker Picks:</strong>' : '<strong>Tiebreakers:</strong>'}
+            ${entry.tiebreakers.score !== undefined && entry.tiebreakers.score !== '' ? ' Score: ' + entry.tiebreakers.score : ''}
             ${entry.tiebreakers.playoff ? ' &bull; Playoff: ' + entry.tiebreakers.playoff : ''}
             ${entry.tiebreakers.leader ? ' &bull; Sat. leader: ' + entry.tiebreakers.leader : ''}
           </div>
@@ -1029,6 +1308,28 @@ function renderLeaderboard(standings) {
     `;
 
     container.appendChild(card);
+  });
+
+  // Insert tiebreaker comparison panels after each tied group
+  const tieGroupsSeen = new Set();
+  standings.forEach((entry) => {
+    if (!entry.isTied) return;
+    const key = entry.totalPoints;
+    if (tieGroupsSeen.has(key)) return;
+    tieGroupsSeen.add(key);
+
+    const tiedEntries = standings.filter(s => s.totalPoints === key);
+    const tieBannerDiv = document.createElement('div');
+    tieBannerDiv.innerHTML = buildTieComparisonHTML(tiedEntries);
+
+    // Insert after the last card of this tied group
+    const allCards = container.querySelectorAll('.leaderboard-card');
+    const lastTiedIdx = standings.indexOf(tiedEntries[tiedEntries.length - 1]);
+    if (allCards[lastTiedIdx]) {
+      allCards[lastTiedIdx].after(tieBannerDiv);
+    } else {
+      container.appendChild(tieBannerDiv);
+    }
   });
 
   // Auto-expand first card

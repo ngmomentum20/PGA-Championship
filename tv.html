@@ -259,6 +259,10 @@ html, body {
   box-shadow: 0 0 20px rgba(200,169,81,0.08);
   animation: leaderGlow 3s ease-in-out infinite;
 }
+.pool-entry.tied {
+  border-color: rgba(212,168,67,0.5);
+  border-style: dashed;
+}
 @keyframes leaderGlow {
   0%, 100% { box-shadow: 0 0 15px rgba(200,169,81,0.08); }
   50% { box-shadow: 0 0 25px rgba(200,169,81,0.15); }
@@ -1462,19 +1466,37 @@ function renderPool(standings) {
     });
   });
 
+  // Detect ties
+  const tiedPoints = new Set();
+  standings.forEach(s => {
+    if (standings.filter(x => x.totalPoints === s.totalPoints).length >= 2) {
+      tiedPoints.add(s.totalPoints);
+    }
+  });
+
   el.innerHTML = standings.map(entry => {
     const rankClass = entry.rank <= 3 ? 'r' + entry.rank : 'rn';
     const isLeader = entry.rank === 1;
+    const isTied = tiedPoints.has(entry.totalPoints);
 
     const counting = entry.golfers.filter(g => g.counting).sort((a, b) => a.points - b.points);
     const notCounting = entry.golfers.filter(g => !g.counting).sort((a, b) => a.points - b.points);
     const ordered = [...counting, ...notCounting];
 
+    const tb = entry.tiebreakers || {};
+    const hasTB = tb.score !== undefined && tb.score !== '' || tb.playoff || tb.leader;
+    const tiedBadge = isTied ? '<span style="font-size:0.5rem;background:rgba(212,168,67,0.25);color:var(--gold);padding:0.1rem 0.35rem;border-radius:4px;font-weight:700;margin-left:0.3rem;letter-spacing:0.06em;">TIED</span>' : '';
+    const tbLine = isTied && hasTB ? `
+      <div style="padding:0.15rem 0.7rem 0.3rem;font-size:0.48rem;color:rgba(255,255,255,0.4);">
+        TB: ${tb.score !== undefined && tb.score !== '' ? 'Score ' + tb.score : ''}${tb.playoff ? ' · Playoff: ' + tb.playoff : ''}${tb.leader ? ' · Sat: ' + tb.leader : ''}
+      </div>
+    ` : '';
+
     return `
-      <div class="pool-entry${isLeader ? ' leader' : ''}">
+      <div class="pool-entry${isLeader ? ' leader' : ''}${isTied ? ' tied' : ''}">
         <div class="pool-entry-header">
           <div class="pool-rank ${rankClass}">${entry.rank}</div>
-          <div class="pool-name">${entry.name}</div>
+          <div class="pool-name">${entry.name}${tiedBadge}</div>
           <div style="text-align:right;">
             <div class="pool-pts">${entry.totalPoints}</div>
             <div class="pool-pts-label">points</div>
@@ -1490,6 +1512,7 @@ function renderPool(standings) {
             </div>
           `).join('')}
         </div>
+        ${tbLine}
       </div>
     `;
   }).join('');
