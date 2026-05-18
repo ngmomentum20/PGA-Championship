@@ -874,6 +874,7 @@ html, body {
 // ============================================================
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx39kPOIqYc6yZi-sK9dT2Ha-eVUq0G-BpYF4CTUoujevCgu_PujDS3SEIPSgbKziAz/exec';
 const DEADLINE = new Date('2026-05-15T04:00:00Z');
+const SATURDAY_LEADER = null; // e.g. 'Scottie Scheffler' — set after R3 ends
 const REFRESH_INTERVAL = 5 * 60 * 1000;
 const ESPN_GOLF_URL = 'https://site.api.espn.com/apis/site/v2/sports/golf/leaderboard';
 const ESPN_NEWS_URL = 'https://site.api.espn.com/apis/site/v2/sports/golf/news';
@@ -1235,6 +1236,43 @@ function calculateStandings(entries) {
   });
 
   standings.sort((a, b) => a.totalPoints - b.totalPoints);
+
+  // Tiebreaker-aware sub-sort for entries with the same point total
+  if (tournamentData && tournamentData.competitors && tournamentData.competitors.length > 0) {
+    const winner = tournamentData.competitors[0];
+    const actualScore = winner.scoreToPar && winner.scoreToPar !== '--' ? (winner.scoreToPar === 'E' ? 0 : parseInt(winner.scoreToPar)) : null;
+    let actualPlayoff = null;
+    if (tournamentData.isComplete && tournamentData.competitors.length >= 2) {
+      actualPlayoff = tournamentData.competitors[0].scoreNum === tournamentData.competitors[1].scoreNum ? 'yes' : 'no';
+    }
+    const actualLeader = typeof SATURDAY_LEADER !== 'undefined' && SATURDAY_LEADER ? SATURDAY_LEADER.trim().toLowerCase() : null;
+
+    standings.sort((a, b) => {
+      if (a.totalPoints !== b.totalPoints) return a.totalPoints - b.totalPoints;
+      const tbA = a.tiebreakers || {};
+      const tbB = b.tiebreakers || {};
+      // TB1: Closest to winning score
+      if (actualScore !== null) {
+        const diffA = (tbA.score !== undefined && tbA.score !== '') ? Math.abs(parseInt(tbA.score) - actualScore) : Infinity;
+        const diffB = (tbB.score !== undefined && tbB.score !== '') ? Math.abs(parseInt(tbB.score) - actualScore) : Infinity;
+        if (diffA !== diffB) return diffA - diffB;
+      }
+      // TB2: Correct playoff prediction
+      if (actualPlayoff !== null) {
+        const correctA = (tbA.playoff || '').toLowerCase() === actualPlayoff ? 1 : 0;
+        const correctB = (tbB.playoff || '').toLowerCase() === actualPlayoff ? 1 : 0;
+        if (correctA !== correctB) return correctB - correctA;
+      }
+      // TB3: Correct Saturday leader (exact name match)
+      if (actualLeader !== null) {
+        const correctA = (tbA.leader || '').trim().toLowerCase() === actualLeader ? 1 : 0;
+        const correctB = (tbB.leader || '').trim().toLowerCase() === actualLeader ? 1 : 0;
+        if (correctA !== correctB) return correctB - correctA;
+      }
+      return 0;
+    });
+  }
+
   let rank = 1;
   standings.forEach((s, i) => {
     s.rank = (i > 0 && s.totalPoints === standings[i - 1].totalPoints) ? standings[i - 1].rank : rank;

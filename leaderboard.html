@@ -797,6 +797,10 @@ body {
 // ============================================================
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx39kPOIqYc6yZi-sK9dT2Ha-eVUq0G-BpYF4CTUoujevCgu_PujDS3SEIPSgbKziAz/exec';
 const DEADLINE = new Date('2026-05-15T04:00:00Z'); // Midnight ET May 14
+
+// TIEBREAKER ACTUALS — Update these manually as the tournament progresses
+// Set SATURDAY_LEADER after Round 3 ends (whoever leads going into Sunday)
+const SATURDAY_LEADER = null; // e.g. 'Scottie Scheffler' — set this after R3
 const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
 const ESPN_GOLF_URL = 'https://site.api.espn.com/apis/site/v2/sports/golf/leaderboard';
 
@@ -1030,6 +1034,40 @@ function calculateStandings(entries) {
 
   standings.sort((a, b) => a.totalPoints - b.totalPoints);
 
+  // Tiebreaker-aware sub-sort for entries with the same point total
+  const actual = (typeof getActualTiebreakerResults === 'function') ? getActualTiebreakerResults() : { score: null, playoff: null, leader: null };
+  standings.sort((a, b) => {
+    if (a.totalPoints !== b.totalPoints) return a.totalPoints - b.totalPoints;
+    // Same points — apply cascading tiebreaker
+    const tbA = a.tiebreakers || {};
+    const tbB = b.tiebreakers || {};
+
+    // TB1: Closest to winning score
+    if (actual.score !== null) {
+      const actualNum = actual.score === 'E' ? 0 : parseInt(actual.score);
+      const diffA = (tbA.score !== undefined && tbA.score !== '') ? Math.abs(parseInt(tbA.score) - actualNum) : Infinity;
+      const diffB = (tbB.score !== undefined && tbB.score !== '') ? Math.abs(parseInt(tbB.score) - actualNum) : Infinity;
+      if (diffA !== diffB) return diffA - diffB; // lower diff = better
+    }
+
+    // TB2: Correct playoff prediction
+    if (actual.playoff !== null) {
+      const correctA = (tbA.playoff || '').toLowerCase() === actual.playoff.toLowerCase() ? 1 : 0;
+      const correctB = (tbB.playoff || '').toLowerCase() === actual.playoff.toLowerCase() ? 1 : 0;
+      if (correctA !== correctB) return correctB - correctA; // correct first
+    }
+
+    // TB3: Correct Saturday leader (exact name match)
+    if (actual.leader !== null) {
+      const actualNorm = actual.leader.trim().toLowerCase();
+      const correctA = (tbA.leader || '').trim().toLowerCase() === actualNorm ? 1 : 0;
+      const correctB = (tbB.leader || '').trim().toLowerCase() === actualNorm ? 1 : 0;
+      if (correctA !== correctB) return correctB - correctA; // correct first
+    }
+
+    return 0;
+  });
+
   let rank = 1;
   standings.forEach((s, i) => {
     if (i > 0 && s.totalPoints === standings[i - 1].totalPoints) {
@@ -1064,10 +1102,7 @@ function getActualTiebreakerResults() {
     playoff = tournamentData.competitors[0].scoreNum === tournamentData.competitors[1].scoreNum ? 'Yes' : 'No';
   }
 
-  // Saturday leader: we can't determine this from live data easily,
-  // so we'll show it as TBD unless the tournament is complete
-  // (would need R3 historical data). Leave as null for now.
-  return { score: actualScore, playoff: playoff, leader: null };
+  return { score: actualScore, playoff: playoff, leader: SATURDAY_LEADER };
 }
 
 function buildTieComparisonHTML(tiedEntries) {
@@ -1110,12 +1145,13 @@ function buildTieComparisonHTML(tiedEntries) {
     });
   }
 
-  // TB3: Saturday leader — exact match wins
+  // TB3: Saturday leader — correct pick wins (exact name match)
   let tb3Winners = [];
   if (actual.leader !== null) {
-    const actualLeaderNorm = actual.leader.toLowerCase().trim();
+    const actualNorm = actual.leader.trim().toLowerCase();
     playerCols.forEach(p => {
-      if (p.leader !== '—' && p.leader.toLowerCase().trim() === actualLeaderNorm) {
+      if (p.leader === '—') return;
+      if (p.leader.trim().toLowerCase() === actualNorm) {
         tb3Winners.push(p.name);
       }
     });
@@ -1153,7 +1189,11 @@ function buildTieComparisonHTML(tiedEntries) {
 
   let row1Cells = playerCols.map(p => `<td class="${cellClass(p.name, tb1Winners)}">${p.score}</td>`).join('');
   let row2Cells = playerCols.map(p => `<td class="${cellClass(p.name, tb2Winners)}">${p.playoff}</td>`).join('');
-  let row3Cells = playerCols.map(p => `<td class="${cellClass(p.name, tb3Winners)}">${p.leader}</td>`).join('');
+  let row3Cells = playerCols.map(p => {
+    const isCorrect = actual.leader && p.leader !== '—' && p.leader.trim().toLowerCase() === actual.leader.trim().toLowerCase();
+    const display = p.leader + (actual.leader ? (isCorrect ? ' ✓' : ' ✗') : '');
+    return `<td class="${cellClass(p.name, tb3Winners)}">${display}</td>`;
+  }).join('');
 
   const actualScoreDisplay = actual.score !== null ? actual.score : (isTournamentDone ? '—' : 'In progress');
   const actualPlayoffDisplay = actual.playoff !== null ? actual.playoff : (isTournamentDone ? '—' : 'TBD');
